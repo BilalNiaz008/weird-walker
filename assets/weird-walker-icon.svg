@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="144" height="144" viewBox="0 0 144 144" role="img" aria-labelledby="title">
+  <title id="title">Weird Walker mascot</title>
+  <style>@media(prefers-color-scheme:dark){.legs{stroke:#c9b3ef}}</style>
+  <g transform="translate(8 0)" stroke="#34304e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path class="legs" d="M46 91 Q48 106 32 110 L19 106 M80 92 Q77 108 89 121 L107 121" fill="none"/>
+    <path d="M27 84 C12 75 14 52 30 42 C25 24 44 13 60 23 C76 10 101 17 104 36 C123 42 125 65 111 77 C108 96 82 100 66 93 C52 101 35 96 27 84Z" fill="#c9b3ef"/>
+    <path d="M58 71 Q70 80 82 67" fill="none" stroke-width="4.5"/>
+    <g fill="#34304e" stroke="none">
+      <ellipse cx="54" cy="54" rx="4.5" ry="6" transform="rotate(-8 54 54)"/>
+      <ellipse cx="79" cy="51" rx="4.5" ry="6" transform="rotate(-8 79 51)"/>
+    </g>
+  </g>
+</svg>

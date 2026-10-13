@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="144" viewBox="0 0 680 144" role="img" aria-labelledby="title desc">
+  <title id="title">Weird Walker</title>
+  <desc id="desc">A lopsided lilac doodle taking a big step beside hand-drawn lowercase lettering.</desc>
+  <style>.wordmark{stroke:#34304e}@media(prefers-color-scheme:dark){.wordmark{stroke:#f0edf9}.legs{stroke:#c9b3ef}}</style>
+  <g stroke="#34304e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path class="legs" d="M46 91 Q48 106 32 110 L19 106 M80 92 Q77 108 89 121 L107 121" fill="none"/>
+    <path d="M27 84 C12 75 14 52 30 42 C25 24 44 13 60 23 C76 10 101 17 104 36 C123 42 125 65 111 77 C108 96 82 100 66 93 C52 101 35 96 27 84Z" fill="#c9b3ef"/>
+    <path d="M58 71 Q70 80 82 67" fill="none" stroke-width="4.5"/>
+  </g>
+  <g fill="#34304e">
+    <ellipse cx="54" cy="54" rx="4.5" ry="6" transform="rotate(-8 54 54)"/>
+    <ellipse cx="79" cy="51" rx="4.5" ry="6" transform="rotate(-8 79 51)"/>
+  </g>
+  <g class="wordmark" fill="none" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M162 58 L171 96 Q173 103 177 96 L186 74 L194 97 Q197 103 200 96 L211 57"/>
+    <path d="M225 85 L257 77 C257 59 235 56 227 69 C214 91 233 111 254 99"/>
+    <path d="M274 69 L273 101 M274 46 L274 47"/>
+    <path d="M298 101 L298 65 M298 81 C305 62 317 61 324 67"/>
+    <path d="M370 41 L369 102 M368 72 C357 57 339 62 337 81 C334 103 356 111 369 88"/>
+    <path d="M403 59 L412 97 Q414 104 418 97 L427 75 L435 98 Q438 104 441 97 L452 58"/>
+    <path d="M495 69 C483 55 465 62 463 81 C460 103 483 110 494 89 M496 65 L495 102"/>
+    <path d="M518 42 L517 95 Q516 105 526 102"/>
+    <path d="M545 42 L544 102 M572 62 L545 84 L574 103"/>
+    <path d="M589 85 L621 77 C621 59 599 56 591 69 C578 91 597 111 618 99"/>
+    <path d="M642 101 L642 65 M642 81 C649 62 661 61 668 67"/>
+  </g>
+</svg>
