@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6751a8">
+<meta name="description" content="Draw a weird little creature, give it legs, and watch it walk. A free, playful doodle toy that runs in your browser.">
+<title>Weird Walker — Draw it. Walk it.</title>
+</head>
+<body>
+<main id="weird-walker" aria-label="Little weird walker creature studio">
+<style>
+#weird-walker{--ww-paper:light-dark(#f2f1fc,#252338);--ww-stage:light-dark(#fffefd,#302e43);--ww-ink:light-dark(#34304e,#f0edf9);--ww-muted:light-dark(#69637e,#c1bad7);--ww-rule:light-dark(#dcd8ea,#504b68);--ww-purple:light-dark(#6751a8,#c0a9fa);--ww-on:light-dark(#ffffff,#292138);background:var(--ww-paper);color:var(--ww-ink);border-radius:22px;padding:24px;font-family:'Trebuchet MS',Verdana,sans-serif}
+#weird-walker *{box-sizing:border-box}#weird-walker [hidden]{display:none!important}
+#weird-walker .ww-top,#weird-walker .ww-tools,#weird-walker .ww-bottom,#weird-walker .ww-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#weird-walker .ww-top{font-size:12px;color:var(--ww-muted)}#weird-walker .ww-mark{font-weight:bold;color:var(--ww-ink)}
+#weird-walker h1{font-size:clamp(28px,5vw,42px);letter-spacing:-1.5px;line-height:1.12;margin:22px 0 9px;color:var(--ww-ink)}
+#weird-walker .ww-sub{font-size:14px;line-height:1.5;color:var(--ww-muted);margin:0 0 23px}
+#weird-walker button{font:inherit;font-size:13px;border:1px solid var(--ww-rule);border-radius:9px;padding:10px 13px;min-height:44px;background:var(--ww-stage);color:var(--ww-ink);cursor:pointer;touch-action:manipulation}
+#weird-walker button:disabled{opacity:.45;cursor:default}#weird-walker button[aria-pressed=true]{background:var(--ww-ink);color:var(--ww-paper);border-color:var(--ww-ink)}
+#weird-walker .ww-tools{margin-bottom:12px}#weird-walker .ww-group{display:flex;gap:6px;flex-wrap:wrap}
+#weird-walker .ww-board{position:relative;border:1px solid var(--ww-rule);border-radius:15px;background:var(--ww-stage);overflow:hidden}
+#weird-walker canvas{width:100%;height:330px;display:block;touch-action:none;cursor:crosshair}
+#weird-walker .ww-caption{position:absolute;left:16px;top:14px;font-size:12px;line-height:1.3;color:var(--ww-muted);pointer-events:none}
+#weird-walker .ww-bottom{margin-top:16px;gap:15px}#weird-walker .ww-status{font-size:13px;line-height:1.5;flex:1;min-width:160px;margin:0;color:var(--ww-muted)}
+#weird-walker .ww-primary{background:var(--ww-purple);color:var(--ww-on);border-color:var(--ww-purple);font-weight:bold;padding:12px 19px}
+#weird-walker .ww-note{font-size:12px;color:var(--ww-muted);margin:17px 0 0}
+@media(max-width:460px){#weird-walker{padding:17px}#weird-walker canvas{height:300px}#weird-walker .ww-bottom{align-items:stretch}#weird-walker .ww-actions{width:100%}#weird-walker .ww-primary{flex:1}#weird-walker .ww-tools button{padding:9px 10px}}
+
+:root{color-scheme:light dark;background:light-dark(#e9e6f3,#1b1929)}
+body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
+#weird-walker{max-width:1000px;margin:0 auto;padding:34px}
+#weird-walker h1{font-size:clamp(34px,6vw,60px);margin-top:30px}
+#weird-walker .ww-sub{font-size:16px;margin-bottom:26px}
+#weird-walker canvas{height:440px}
+#weird-walker button:focus-visible{outline:3px solid var(--ww-purple);outline-offset:3px}
+#weird-walker .ww-board{border-radius:18px}
+#weird-walker .ww-note{line-height:1.6}
+#weird-walker .ww-personality{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 16px;align-items:end}
+#weird-walker .ww-personality label{display:grid;gap:6px;font-size:13px;flex:1;min-width:170px}
+#weird-walker input,#weird-walker select{width:100%;min-width:0;font:inherit;font-size:16px;color:var(--ww-ink);background:var(--ww-stage);border:1px solid var(--ww-rule);border-radius:9px;padding:11px;min-height:44px}
+#weird-walker .ww-export{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px;font-size:13px}
+#weird-walker progress{accent-color:var(--ww-purple);flex:1;min-width:100px}
+#weird-walker .ww-walk-result{font-size:13px;margin:0 0 12px;color:var(--ww-muted)}
+#weird-walker .ww-fill-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
+#weird-walker .ww-swatch{width:44px;padding:0;border-radius:50%;background:var(--swatch);border:3px solid var(--ww-stage);outline:1px solid var(--ww-rule)}
+#weird-walker .ww-swatch[aria-pressed=true]{outline:3px solid var(--ww-ink)}
+@media(max-width:600px){body{padding:12px}#weird-walker{padding:18px}#weird-walker canvas{height:360px}#weird-walker .ww-actions{width:100%;justify-content:flex-start}#weird-walker .ww-primary{flex:1}#weird-walker .ww-top{gap:8px}#weird-walker .ww-caption{right:12px}}
+</style>
+<div class="ww-top"><span class="ww-mark">The doodle playground</span><span>Draw something. Let it loose.</span></div>
+<h1>Weird Walker.</h1>
+<p class="ww-sub">Draw a creature. Give it legs. Watch it find its feet.</p>
+<div class="ww-personality"><label>Name<input id="ww-name" maxlength="40" value="Little weirdo" autocomplete="off"></label><label>Walk<select id="ww-walk"><option value="auto">Automatic</option><option value="wobble">Wobble</option><option value="shuffle">Shuffle</option><option value="bounce">Bounce</option></select></label></div>
+<p class="ww-walk-result" id="ww-gait" aria-live="polite"></p>
+<div class="ww-tools" id="ww-tools">
+  <div class="ww-group" role="group" aria-label="Drawing tools"><button id="ww-draw" type="button" aria-pressed="true">Draw</button><button id="ww-circle" type="button" aria-pressed="false">Circle</button><button id="ww-fill" type="button" aria-pressed="false">Fill</button><button id="ww-feet" type="button" aria-pressed="false">Add legs</button><button id="ww-face" type="button" aria-pressed="false">Add face</button></div>
+  <div class="ww-group"><button id="ww-undo" type="button" disabled>Undo</button><button id="ww-clear" type="button">Clear</button><button id="ww-example" type="button">Try a blob</button></div>
+  <div class="ww-group" id="ww-face-tools" hidden><button id="ww-face-centre" type="button">Place in centre</button><button id="ww-face-remove" type="button" disabled>Remove face</button></div>
+  <div class="ww-fill-tools" id="ww-fill-tools" role="group" aria-label="Fill colour" hidden>
+    <button class="ww-swatch" data-fill="#c9b3ef" style="--swatch:#c9b3ef" aria-label="Purple" aria-pressed="true"></button><button class="ww-swatch" data-fill="#f4afc5" style="--swatch:#f4afc5" aria-label="Pink" aria-pressed="false"></button><button class="ww-swatch" data-fill="#f3d777" style="--swatch:#f3d777" aria-label="Yellow" aria-pressed="false"></button><button class="ww-swatch" data-fill="#9fdbc7" style="--swatch:#9fdbc7" aria-label="Mint" aria-pressed="false"></button><button class="ww-swatch" data-fill="#91c5e8" style="--swatch:#91c5e8" aria-label="Blue" aria-pressed="false"></button><button class="ww-swatch" data-fill="#efb37a" style="--swatch:#efb37a" aria-label="Orange" aria-pressed="false"></button><button id="ww-unfill" type="button" aria-pressed="false">Remove fill</button>
+  </div>
+</div>
+<div class="ww-board">
+  <span class="ww-caption" id="ww-caption">Meet your first questionable creation.</span>
+  <canvas id="ww-canvas" aria-label="Creature drawing area. Draw with a mouse or finger. Alternatively, use Try a blob and Bring it to life with the keyboard.">Use Try a blob to create a creature, then Bring it to life to animate it.</canvas>
+</div>
+<div class="ww-bottom"><p class="ww-status" id="ww-status" aria-live="polite">Try this little blob, or clear the page and draw your own.</p><div class="ww-actions"><button id="ww-hello" type="button" hidden>Say hello</button><button id="ww-download" type="button">Save image</button><button id="ww-video" type="button">Save video</button><button id="ww-edit" type="button" hidden>Back to drawing</button><button class="ww-primary" id="ww-play" type="button">Bring it to life</button></div></div>
+<div class="ww-export" id="ww-export" hidden><label for="ww-progress" id="ww-progress-label">Recording 0 / 6 seconds</label><progress id="ww-progress" max="6" value="0"></progress><button id="ww-cancel" type="button">Cancel</button></div>
+<p class="ww-note" id="ww-video-note">Video: 6 seconds, silent. MP4 when available, otherwise WebM.</p>
+<p class="ww-note">Draw outlines, make circles, then choose if and how to fill them. Legs and faces are always your choice. Your drawing stays in this browser.</p>
+<script>
+(() => {
+  const root = document.getElementById('weird-walker');
+  const $ = name => root.querySelector('#ww-' + name);
+  const canvas = $('canvas'), ctx = canvas.getContext('2d');
+  let strokes = [], fills = [], feet = [], face = null, history = [], mode = 'draw', placing = 0, pointer = null, circleStart = null;
+  let fillColor = '#c9b3ef';
+  let walking = false, playing = false, frame = 0, lastTime = 0, time = 0, width = 0, height = 0;
+  let creatureName = 'Little weirdo', walk = 'auto', reactionAt = -100, hit = null, recording = null;
+  const gaits = {
+    wobble:{speed:3.8,tilt:.16,stride:13,lift:6,bob:2},
+    shuffle:{speed:8,tilt:.025,stride:7,lift:3,bob:1},
+    bounce:{speed:6,tilt:.04,stride:17,lift:18,bob:10}
+  };
+  const storageKey = 'weird-walker-v1';
+  const fillColors=['#c9b3ef','#f4afc5','#f3d777','#9fdbc7','#91c5e8','#efb37a'];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  function bounds(lines = strokes) {
+    let result = null;
+    for (const stroke of lines) for (const p of stroke) {
+      if (!result) result = {l:p.x,r:p.x,t:p.y,b:p.y};
+      else { result.l=Math.min(result.l,p.x); result.r=Math.max(result.r,p.x); result.t=Math.min(result.t,p.y); result.b=Math.max(result.b,p.y); }
+    }
+    return result;
+  }
+  function closed(stroke){return stroke.length>4&&Math.hypot(stroke[0].x-stroke.at(-1).x,stroke[0].y-stroke.at(-1).y)<45;}
+  function shapePath(stroke){const path=new Path2D();path.moveTo(stroke[0].x,stroke[0].y);stroke.slice(1).forEach(p=>path.lineTo(p.x,p.y));if(closed(stroke))path.closePath();return path;}
+  function save() {
+    history.push(structuredClone({strokes,fills,feet,face,mode,placing}));
+    // ponytail: keep 30 undo actions in memory; use incremental history for longer drawing sessions.
+    if (history.length > 30) history.shift();
+    $('undo').disabled = false;
+  }
+  function persist() {
+    try { localStorage.setItem(storageKey, JSON.stringify({version:2,strokes,fills,feet,face,name:creatureName,walk})); }
+    catch { $('status').textContent='Browser saving is unavailable. Use Save image to keep a picture.'; }
+  }
+  function restore() {
+    try {
+      const raw=localStorage.getItem(storageKey); if(!raw || raw.length>2000000)return false;
+      const data=JSON.parse(raw), validPoint=p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=0&&p.x<=640&&p.y>=20&&p.y<=270;
+      if(!data || !Array.isArray(data.strokes)||data.strokes.length>500||!Array.isArray(data.feet)||data.feet.length>2)return false;
+      let count=0;
+      for(const s of data.strokes){if(!Array.isArray(s)||s.length===0||!s.every(validPoint))return false;count+=s.length;}
+      if(count>20000 || !data.feet.every(validPoint))return false;
+      strokes=data.strokes;feet=data.feet;
+      const legacyFills=!Array.isArray(data.fills);
+      fills=legacyFills?strokes.map(stroke=>closed(stroke)?'#c9b3ef':null):strokes.map((_,i)=>fillColors.includes(data.fills[i])?data.fills[i]:null);
+      creatureName=typeof data.name==='string' ? data.name.trim().slice(0,40)||'Little weirdo' : 'Little weirdo';
+      walk=['auto','wobble','shuffle','bounce'].includes(data.walk)?data.walk:'auto';
+      const b=bounds(),legacyFace=!Object.prototype.hasOwnProperty.call(data,'face');
+      face=legacyFace ? (b?{x:(b.l+b.r)/2,y:(b.t+b.b)/2}:null) : (b&&validPoint(data.face)?{x:data.face.x,y:data.face.y}:null);
+      if(legacyFills||legacyFace||data.version!==2||data.fills.length!==strokes.length||fills.some((fill,i)=>fill!==data.fills[i]))persist();
+      return true;
+    } catch { return false; }
+  }
+  function drawingScale(){return Math.min((width-36)/640,(height-70)/360);} 
+  function sample() {
+    save(); strokes=[Array.from({length:81},(_,i)=>{const a=i/80*Math.PI*2, r=1+.09*Math.cos(a*5); return {x:320+92*Math.cos(a)*r,y:147+65*Math.sin(a)*r};})];
+    fills=[null];feet=[];face=null;
+    setMode('draw'); $('status').textContent='An outline-only blob. Add its legs, face, and colour yourself.'; render(); persist();
+  }
+  function setMode(next) {
+    mode=next; placing=0;
+    syncTools();
+  }
+  function syncTools(){
+    for(const tool of ['draw','circle','fill','feet','face'])$(tool).setAttribute('aria-pressed',mode===tool);
+    $('face-tools').hidden=mode!=='face';
+    $('fill-tools').hidden=mode!=='fill';
+    if(!recording)$('face-remove').disabled=!face;
+    $('caption').textContent=mode==='face'?'Tap where you want the face.':mode==='feet'?'Tap two spots on the body to attach legs.':mode==='circle'?'Drag to make a circle or oval.':mode==='fill'?'Tap a closed shape to fill it.':'Draw an outline. Close it only if you want to fill it later.';
+  }
+  function placeFace(p){
+    if(walking||recording)return;
+    const b=bounds();
+    if(!b){$('status').textContent='Draw a body first, or use Try a blob.';return;}
+    if(p.x<b.l||p.x>b.r||p.y<b.t||p.y>b.b){$('status').textContent='Tap inside the body’s bounding rectangle to place the face.';return;}
+    save();face={x:p.x,y:p.y};$('status').textContent='Face placed. Tap another spot to move it.';syncTools();render();persist();
+  }
+  function snapshot() {return {strokes,fills,feet,face,name:creatureName,walk};}
+  function gaitFor(creature,b) {
+    if(creature.walk!=='auto')return creature.walk;
+    const ratio=(b.b-b.t)/Math.max(1,b.r-b.l);
+    return ratio>1.35?'wobble':ratio<.75?'shuffle':'bounce';
+  }
+  function renderScene(context,w,h,t,creature,options) {
+    const b=bounds(creature.strokes),color=options.ink,ground=h-44;
+    context.save();context.setTransform(options.dpr||1,0,0,options.dpr||1,0,0);
+    context.clearRect(0,0,w,h);
+    if(options.background){context.fillStyle=options.background;context.fillRect(0,0,w,h);}
+    function line(points,size=4,fill=null){
+      if(!points.length)return;context.beginPath();context.moveTo(points[0].x,points[0].y);
+      for(const p of points.slice(1))context.lineTo(p.x,p.y);
+      if(points.length===1)context.lineTo(points[0].x+.1,points[0].y);
+      if(fill){context.closePath();context.fillStyle=fill;context.fill();}
+      context.strokeStyle=color;context.lineWidth=size;context.lineCap='round';context.lineJoin='round';context.stroke();
+    }
+    if(options.title){context.fillStyle=color;context.font='28px Trebuchet MS, sans-serif';context.textAlign='center';context.fillText(creature.name,w/2,52,w-64);}
+    if(options.walking){
+      context.globalAlpha=.22;line([{x:20,y:ground},{x:w-20,y:ground}],1);
+      for(let i=0;i<Math.ceil(w/100)+2;i++){const x=((i*100-(options.reduced?0:t*28))%(w+100)+(w+100))%(w+100)-50;line([{x,y:ground+10},{x:x+15,y:ground+10}],2);}context.globalAlpha=1;
+    }
+    if(!b){context.restore();return null;}
+    const cx=(b.l+b.r)/2,cy=(b.t+b.b)/2,gait=gaits[gaitFor(creature,b)];
+    const phase=t*(options.reduced?2:gait.speed),age=t-(options.reactionAt??-100),reacting=age>=0&&age<.8;
+    const hop=reacting&&!options.reduced?Math.sin(age/.8*Math.PI)*24:0;
+    let scale;
+    if(options.walking){
+      // ponytail: procedural gait; physics only becomes necessary for terrain or collisions.
+      const extents={l:Math.min(b.l,...creature.feet.map(f=>f.x))-40,r:Math.max(b.r,...creature.feet.map(f=>f.x))+54,t:Math.min(b.t,...creature.feet.map(f=>f.y)),b:b.b+52};
+      if(creature.face){
+        const spread=Math.min(17,Math.max(7,(b.r-b.l)*.13))+7;
+        extents.l=Math.min(extents.l,creature.face.x-spread);extents.r=Math.max(extents.r,creature.face.x+spread);
+        extents.t=Math.min(extents.t,creature.face.y-18);extents.b=Math.max(extents.b,creature.face.y+21);
+      }
+      const radius=Math.max(Math.hypot(extents.l-cx,extents.t-cy),Math.hypot(extents.r-cx,extents.b-cy),Math.hypot(extents.l-cx,extents.b-cy),Math.hypot(extents.r-cx,extents.t-cy));
+      scale=Math.min(w*.34/Math.max(radius,1),(h-150)/Math.max(2*radius,1),options.title?2.1:1.15);
+      const bob=options.reduced?0:Math.abs(Math.sin(phase))*gait.bob;
+      const tilt=options.reduced?.012:gait.tilt;
+      const bottomReach=extents.b-cy+Math.max(Math.abs(extents.l-cx),Math.abs(extents.r-cx))*Math.sin(tilt)+Math.max(Math.abs(extents.t-cy),Math.abs(extents.b-cy))*(1-Math.cos(tilt));
+      context.translate(w/2+(options.reduced?0:Math.sin(t*.65)*w*.08),ground-bottomReach*scale-bob-hop);
+      context.scale(scale,scale);context.rotate(Math.sin(phase)*(options.reduced?.012:gait.tilt));context.translate(-cx,-cy);
+    }else{scale=Math.min((w-36)/640,(h-70)/360);context.translate(w/2-320*scale,h/2-170*scale);context.scale(scale,scale);}
+    const transform=context.getTransform();
+    creature.feet.forEach((f,i)=>{
+      const p=phase+i*Math.PI,stride=options.walking?Math.sin(p)*(options.reduced?5:gait.stride):0,lift=options.walking?Math.max(0,Math.cos(p))*(options.reduced?2:gait.lift):0;
+      line([f,{x:f.x+stride*.4+(i?5:-5),y:b.b+22},{x:f.x+stride,y:b.b+48-lift},{x:f.x+stride+14,y:b.b+48-lift}],5);
+    });
+    creature.strokes.forEach((s,i)=>line(s,4,creature.fills?.[i]||null));
+    if(creature.face){
+      const fx=creature.face.x,fy=creature.face.y,eyeGap=Math.min(17,Math.max(7,(b.r-b.l)*.13));
+      context.save();context.setTransform(1,0,0,1,0,0);
+      const onFill=creature.strokes.some((s,i)=>creature.fills?.[i]&&context.isPointInPath(shapePath(s),fx,fy));
+      context.restore();
+      const faceColor=onFill?'#34304e':color,blink=options.walking&&t%4>=3.82;
+      context.fillStyle=faceColor;context.strokeStyle=faceColor;context.lineWidth=3;
+      for(const dx of [-eyeGap,eyeGap]){
+        context.beginPath();context.ellipse(fx+dx,fy-8,reacting?5:3.5,blink&&!reacting?1:reacting?8:6,0,0,Math.PI*2);context.fill();
+      }
+      context.beginPath();if(reacting)context.ellipse(fx,fy+12,5,7,0,0,Math.PI*2);else context.arc(fx,fy+9,8,.12,Math.PI-.12);context.stroke();
+    }
+    if(options.placing){creature.feet.forEach((f,i)=>{context.beginPath();context.arc(f.x,f.y,10,0,Math.PI*2);context.fillStyle='#c9b3ef';context.fill();context.strokeStyle=color;context.lineWidth=2;context.stroke();context.fillStyle='#30263f';context.font='12px sans-serif';context.textAlign='center';context.fillText(String(i+1),f.x,f.y+4);});}
+    context.restore();return {inverse:transform.inverse(),bounds:b};
+  }
+  function render() {
+    const creature=snapshot(),b=bounds(),kind=b?gaitFor(creature,b):null;
+    $('gait').textContent=kind?`${walk==='auto'?'Automatic: ':''}${kind[0].toUpperCase()+kind.slice(1)}`:'Draw a body to discover its walk.';
+    hit=renderScene(ctx,width,height,time,creature,{ink:getComputedStyle(root).color,dpr:Math.min(devicePixelRatio||1,2),walking,reduced:reduced.matches,reactionAt,placing:mode==='feet'&&!walking});
+  }
+
+  function tick(now) { if(!playing)return;time+=Math.min((now-lastTime)/1000,.05);lastTime=now;render();frame=requestAnimationFrame(tick); }
+  function stop() {playing=false;cancelAnimationFrame(frame);}
+  function edit() {stop();walking=false;time=0;reactionAt=-100;$('hello').hidden=true;$('tools').hidden=false;$('edit').hidden=true;$('play').textContent='Bring it to life';syncTools();$('status').textContent='A little adjustment before the next adventure?';render();}
+  function point(e){const r=canvas.getBoundingClientRect(),scale=drawingScale();return {x:Math.max(0,Math.min(640,(e.clientX-r.left-width/2)/scale+320)),y:Math.max(20,Math.min(270,(e.clientY-r.top-height/2)/scale+170))};}
+  function ellipse(from,to){
+    const cx=(from.x+to.x)/2,cy=(from.y+to.y)/2,rx=Math.abs(to.x-from.x)/2,ry=Math.abs(to.y-from.y)/2;
+    return Array.from({length:65},(_,i)=>{const a=i/64*Math.PI*2;return{x:cx+rx*Math.cos(a),y:cy+ry*Math.sin(a)};});
+  }
+  function fillAt(p){
+    for(let i=strokes.length-1;i>=0;i--){
+      if(!closed(strokes[i])||!ctx.isPointInPath(shapePath(strokes[i]),p.x,p.y))continue;
+      save();fills[i]=fillColor;$('status').textContent=fillColor?'Shape filled. Pick another colour or shape.':'Fill removed. The outline stays.';render();persist();return;
+    }
+    $('status').textContent='Tap inside a closed shape. Open lines and empty space cannot be filled.';
+  }
+  canvas.addEventListener('pointerdown',e=>{
+    if(recording||pointer!==null||e.button!==0)return;
+    if(walking){
+      if(!hit||!playing)return;
+      const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2),p=new DOMPoint((e.clientX-rect.left)*dpr,(e.clientY-rect.top)*dpr).matrixTransform(hit.inverse),b=hit.bounds;
+      if(p.x>=b.l&&p.x<=b.r&&p.y>=b.t&&p.y<=b.b){
+        ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.lineWidth=12;
+        const touched=strokes.some(s=>{
+          const path=new Path2D();path.moveTo(s[0].x,s[0].y);s.slice(1).forEach(q=>path.lineTo(q.x,q.y));
+          const closed=s.length>4&&Math.hypot(s[0].x-s.at(-1).x,s[0].y-s.at(-1).y)<45;
+          if(closed)path.closePath();return (closed&&ctx.isPointInPath(path,p.x,p.y))||ctx.isPointInStroke(path,p.x,p.y);
+        });ctx.restore();if(touched)hello();
+      }return;
+    }
+    e.preventDefault();const p=point(e);
+    if(mode==='fill'){fillAt(p);return;}
+    if(mode==='face'){
+      const rect=canvas.getBoundingClientRect(),scale=drawingScale();
+      placeFace({x:(e.clientX-rect.left-width/2)/scale+320,y:(e.clientY-rect.top-height/2)/scale+170});return;
+    }
+    if(mode==='feet'){
+      if(!strokes.length){$('status').textContent='Draw a body first, or use Try a blob.';return;}
+      const b=bounds();p.x=Math.max(b.l,Math.min(b.r,p.x));p.y=Math.max(b.t,Math.min(b.b,p.y));
+      save();if(placing===0)feet=[];feet.push(p);placing++;
+      $('status').textContent=placing===1?'One leg attached. Tap for the second.':'Two legs. Highly questionable coordination.';
+      if(placing===2)setMode('draw');render();persist();return;
+    }
+    if(strokes.length>=500 || strokes.reduce((n,s)=>n+s.length,0)>=20000){$('status').textContent='This drawing is full. Save an image, then clear the page to start another.';return;}
+    save();pointer=e.pointerId;canvas.setPointerCapture(pointer);circleStart=mode==='circle'?p:null;strokes.push([p]);fills.push(null);render();
+  });
+  canvas.addEventListener('pointermove',e=>{if(recording||e.pointerId!==pointer)return;const p=point(e),s=strokes.at(-1);if(circleStart){strokes[strokes.length-1]=ellipse(circleStart,p);render();return;}if(strokes.reduce((n,line)=>n+line.length,0)>=20000)return;if(Math.hypot(p.x-s.at(-1).x,p.y-s.at(-1).y)>2){s.push(p);render();}});
+  function end(e){
+    if(pointer!==e.pointerId)return;pointer=null;
+    if(circleStart){
+      const s=strokes.at(-1),b=bounds([s]);circleStart=null;
+      if(!b||b.r-b.l<12||b.b-b.t<12){strokes.pop();fills.pop();history.pop();$('undo').disabled=!history.length;$('status').textContent='Drag farther to make a circle or oval.';render();return;}
+      $('status').textContent='Circle outline added. Use Fill if you want colour.';
+    }else $('status').textContent=closed(strokes.at(-1))?'Closed outline added. Use Fill if you want colour.':'Open line added. It will stay unfilled.';
+    render();persist();
+  }
+  canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);canvas.addEventListener('lostpointercapture',end);
+  $('draw').onclick=()=>{setMode('draw');render();};$('circle').onclick=()=>{setMode('circle');render();};$('fill').onclick=()=>{setMode('fill');render();};$('feet').onclick=()=>{setMode('feet');render();};
+  root.querySelectorAll('[data-fill]').forEach(button=>button.onclick=()=>{fillColor=button.dataset.fill;root.querySelectorAll('[data-fill]').forEach(b=>b.setAttribute('aria-pressed',b===button));$('unfill').setAttribute('aria-pressed','false');$('caption').textContent=`Tap a closed shape to fill it ${button.getAttribute('aria-label').toLowerCase()}.`;});
+  $('unfill').onclick=()=>{fillColor=null;root.querySelectorAll('[data-fill]').forEach(b=>b.setAttribute('aria-pressed','false'));$('unfill').setAttribute('aria-pressed','true');$('caption').textContent='Tap a filled shape to remove its colour.';};
+  $('face').onclick=()=>{setMode('face');render();};
+  $('face-centre').onclick=()=>{const b=bounds();placeFace(b?{x:(b.l+b.r)/2,y:(b.t+b.b)/2}:{x:0,y:0});};
+  $('face-remove').onclick=()=>{if(!face||walking||recording)return;save();face=null;syncTools();render();persist();$('status').textContent='Face removed. Your creature can still walk.';};
+  $('example').onclick=sample;
+  $('clear').onclick=()=>{save();strokes=[];fills=[];feet=[];face=null;setMode('draw');$('status').textContent='Draw any shape with your mouse or finger.';render();persist();};
+  $('undo').onclick=()=>{const previous=history.pop();if(previous){({strokes,fills,feet,face,mode,placing}=previous);syncTools();$('undo').disabled=!history.length;render();persist();}};
+  $('edit').onclick=edit;
+  $('name').addEventListener('input',()=>{creatureName=$('name').value.trim().slice(0,40)||'Little weirdo';persist();});
+  $('name').addEventListener('blur',()=>{$('name').value=creatureName;});
+  $('walk').addEventListener('change',()=>{walk=$('walk').value;render();persist();});
+  function hello(){if(!walking||!playing||recording)return;reactionAt=time;$('status').textContent=`${creatureName} says hello!`;render();}
+  $('hello').onclick=hello;
+  function requireLegs(){if(feet.length===2)return false;if(mode!=='feet')setMode('feet');$('status').textContent='Place two legs before your creature can walk.';return true;}
+  $('download').onclick=()=>{
+    if(!bounds()){$('status').textContent='Draw a creature before saving an image.';return;}
+    const image=document.createElement('canvas');image.width=canvas.width;image.height=canvas.height;
+    const output=image.getContext('2d');output.fillStyle=getComputedStyle(canvas.parentElement).backgroundColor;output.fillRect(0,0,image.width,image.height);output.drawImage(canvas,0,0);
+    image.toBlob(blob=>{
+      if(!blob){$('status').textContent='The image could not be saved. Try again.';return;}
+      const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='weird-walker.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);
+      $('status').textContent='Your creature picture is ready. Show someone its excellent legs.';
+    },'image/png');
+  };
+  $('play').onclick=()=>{
+    const b=bounds();if(!b||b.r-b.l<15||b.b-b.t<15){$('status').textContent='Your creature needs a bigger body. Draw a shape, or try a blob.';return;}
+    if(playing){stop();$('hello').disabled=true;$('play').textContent='Keep walking';$('status').textContent='Taking a tiny, well-earned break.';return;}
+    if(requireLegs())return;
+    persist();walking=true;playing=true;$('hello').hidden=false;$('hello').disabled=false;$('tools').hidden=true;$('edit').hidden=false;$('play').textContent='Pause';
+    $('caption').textContent='First steps. Zero qualifications.';$('status').textContent='It’s alive. And surprisingly proud of itself.';lastTime=performance.now();frame=requestAnimationFrame(tick);
+  };
+  new ResizeObserver(()=>{const r=canvas.getBoundingClientRect();width=r.width;height=r.height;const dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);render();}).observe(canvas);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change',render);
+  function downloadBlob(blob,extension){
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`weird-walker.${extension}`;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);
+  }
+  const videoTypes=['video/mp4;codecs=avc1.42001E','video/mp4','video/webm;codecs=vp8','video/webm'];
+  function supportedTypes(){return typeof MediaRecorder==='function'&&typeof canvas.captureStream==='function'?videoTypes.filter(type=>MediaRecorder.isTypeSupported(type)):[];}
+  function finishExport(job,message,blob){
+    if(recording!==job)return;
+    recording=null;clearInterval(job.timer);clearTimeout(job.watchdog);
+    job.recorder.ondataavailable=null;job.recorder.onstop=null;job.recorder.onerror=null;
+    try{if(job.recorder.state!=='inactive')job.recorder.stop();}catch{}
+    job.stream.getTracks().forEach(track=>track.stop());
+    job.controls.forEach(([element,disabled])=>element.disabled=disabled);
+    $('export').hidden=true;$('status').textContent=message;
+    if(blob)downloadBlob(blob,blob.type.startsWith('video/mp4')?'mp4':'webm');
+    if(job.wasPlaying&&!document.hidden){playing=true;lastTime=performance.now();frame=requestAnimationFrame(tick);}
+    else if(job.wasPlaying){$('play').textContent='Keep walking';$('hello').disabled=true;}
+  }
+  function cancelExport(message='Video cancelled. Your creature is unchanged.') {if(recording)finishExport(recording,message);}
+  $('cancel').onclick=()=>cancelExport();
+  $('video').onclick=()=>{
+    if(recording||pointer!==null)return;
+    const b=bounds();
+    if(!b||b.r-b.l<15||b.b-b.t<15){$('status').textContent='Draw a bigger creature before recording.';return;}
+    if(requireLegs())return;
+    const types=supportedTypes();
+    if(!types.length){$('status').textContent='Video recording is unavailable in this browser. You can still save a PNG image.';return;}
+    const creature=structuredClone(snapshot());
+    const videoCanvas=document.createElement('canvas');videoCanvas.width=720;videoCanvas.height=720;
+    const output=videoCanvas.getContext('2d'),options={walking:true,reduced:reduced.matches,ink:getComputedStyle(root).color,background:getComputedStyle(canvas.parentElement).backgroundColor,title:true};
+    let recorder,stream;
+    for(const type of types){
+      try{stream=videoCanvas.captureStream(30);recorder=new MediaRecorder(stream,{mimeType:type,videoBitsPerSecond:3500000});recorder.start();break;}
+      catch{stream?.getTracks().forEach(track=>track.stop());recorder=null;}
+    }
+    if(!recorder){$('status').textContent='This browser could not start video recording. Try Save image instead.';return;}
+    const job={recorder,stream,wasPlaying:playing,chunks:[],controls:Array.from(root.querySelectorAll('button,input,select')).filter(e=>e!==$('cancel')).map(e=>[e,e.disabled])};
+    recording=job;stop();job.controls.forEach(([element])=>element.disabled=true);
+    $('export').hidden=false;$('progress').value=0;$('progress-label').textContent='Recording 0 / 6 seconds';$('status').textContent='Recording a six-second walk. Keep this tab open.';
+    recorder.ondataavailable=e=>{if(e.data.size)job.chunks.push(e.data);};
+    recorder.onerror=()=>finishExport(job,'Recording failed. Your creature is unchanged; try again or save an image.');
+    recorder.onstop=()=>{
+      const blob=new Blob(job.chunks,{type:recorder.mimeType||job.chunks[0]?.type||''});
+      finishExport(job,blob.size?'Your six-second video is ready.':'Recording was empty. Try again or save an image.',blob.size?blob:null);
+    };
+    const start=performance.now();
+    const paint=()=>{
+      if(recording!==job)return;
+      try{
+        const elapsed=Math.min((performance.now()-start)/1000,6);
+        renderScene(output,720,720,elapsed,creature,options);
+        $('progress').value=elapsed;
+        const label=`Recording ${Math.floor(elapsed)} / 6 seconds`;if($('progress-label').textContent!==label)$('progress-label').textContent=label;
+        if(elapsed>=6){clearInterval(job.timer);recorder.stop();}
+      }catch{finishExport(job,'Recording failed. Your creature is unchanged; try again or save an image.');}
+    };
+    renderScene(output,720,720,0,creature,options);
+    job.timer=setInterval(paint,1000/30);
+    job.watchdog=setTimeout(()=>finishExport(job,'Recording timed out. Try again or save an image.'),10000);
+  };
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelExport('Recording cancelled because the tab was hidden. Try again when you return.');if(playing){stop();$('play').textContent='Keep walking';$('hello').disabled=true;}}});
+  window.addEventListener('pagehide',()=>cancelExport());
+  if(!supportedTypes().length){$('video').disabled=true;$('video-note').textContent='Video recording is unavailable in this browser. PNG image export still works.';}
+  if(restore()){$('status').textContent='Welcome back. Your last creature is right here.';render();}else sample();
+  history=[];$('undo').disabled=true;
+  $('name').value=creatureName;$('walk').value=walk;
+})();
+</script>
+</main>
+
+</body>
+</html>
+
