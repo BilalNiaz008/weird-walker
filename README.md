@@ -2,6 +2,10 @@
 
 Draw a creature, place two leg attachments, then bring it to life.
 
+## Logo
+
+The lilac walking doodle and custom lowercase wordmark are in `assets/weird-walker-logo.svg`; the standalone mascot and favicon are in `assets/weird-walker-icon.svg`. Both are scalable vector artwork with no font dependencies. The wordmark and mascot legs adapt to dark mode. Transparent PNG exports are available alongside the SVGs.
+
 ## Run
 
 Open `index.html` in a modern browser. No build, account, server, or runtime dependencies are needed.
@@ -33,7 +37,7 @@ Keyboard users can name a blob, choose a walk, place a centred face, remove it, 
 
 ## Check
 
-The app is a single HTML file. `check.cjs` uses Node.js and Playwright for desktop, phone, touch, persistence, undo, PNG export, shape thresholds, explicit legs, circles and ovals, per-shape fills, old saved drawings, different gaits, blinking, body-only reactions, reduced motion, and video export checks. It decodes real MP4 and WebM recordings and checks their dimensions, duration, and changing frames, plus cancellation, tab hiding, resize, unsupported recording, and recorder failures. With Playwright available, run `node check.cjs`. Set `NODE_PATH` to an existing Playwright installation if it is outside this folder. Tests produce images and videos in the system temporary directory. Full tests take approximately 30 seconds and require a Chromium build with MP4 recording support for the MP4 assertion.
+The app uses a plain HTML file and local SVG logo assets. `check.cjs` uses Node.js and Playwright for desktop, phone, touch, persistence, undo, PNG export, shape thresholds, explicit legs, circles and ovals, per-shape fills, old saved drawings, different gaits, blinking, body-only reactions, reduced motion, and video export checks. It decodes real MP4 and WebM recordings and checks their dimensions, duration, and changing frames, plus cancellation, tab hiding, resize, unsupported recording, and recorder failures. With Playwright available, run `node check.cjs`. Set `NODE_PATH` to an existing Playwright installation if it is outside this folder. Tests produce images and videos in the system temporary directory. Full tests take approximately 30 seconds and require a Chromium build with MP4 recording support for the MP4 assertion.
 
 ## Scope
 
