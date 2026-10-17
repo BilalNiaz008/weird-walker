@@ -8,7 +8,7 @@ The lilac walking doodle and custom lowercase wordmark are in `assets/weird-walk
 
 ## Run
 
-Open `index.html` in a modern browser. No build, account, server, or runtime dependencies are needed.
+Open `index.html` in a modern browser. No build, account, server, or package installation is needed. Drawing and animation work even when Google Analytics is blocked or offline.
 
 For a local web address, run `python -m http.server 8790 --bind 127.0.0.1` from this folder, then open http://127.0.0.1:8790.
 
@@ -47,8 +47,14 @@ Deploy `index.html`, `robots.txt`, `sitemap.xml`, and `assets/` together. The si
 
 After deployment, verify that `/robots.txt` and `/sitemap.xml` return their actual files with HTTP 200. In Google Search Console, verify ownership of the site, submit `https://www.weirdwalker.online/sitemap.xml`, and inspect the homepage to request indexing. Use Search Console's search performance report to measure impressions, clicks, and queries over time. Indexing and ranking improvements are not guaranteed by these changes.
 
+## Analytics
+
+The page head includes the Google tag for GA4 measurement ID `G-HPRPYP1GHM`. It loads asynchronously and uses Google's default page-view tracking. No custom events send creature names, strokes, or exported images/videos. The page includes a notice that Google Analytics measures site traffic.
+
+After deployment, open the site and select the matching property at https://analytics.google.com/. Go to Reports → Realtime to check visits. Browser tracking protection or ad blockers can prevent visits from appearing. The browser checks run offline, verify the tag's initialization queue, and confirm that the drawing tools still work without Analytics; tests do not send traffic to the live property.
+
 ## Scope
 
-Walking uses a procedural animation, not a physics simulation. There is no server, public gallery, live sharing, GIF export, collection, or obstacle course. Nothing is sent over the network by the app. A drawing is limited to 500 strokes / 20,000 points to keep browser work bounded. Existing saved drawings load with the default name Little weirdo and Automatic walk.
+Walking uses a procedural animation, not a physics simulation. There is no server, public gallery, live sharing, GIF export, collection, or obstacle course. Drawings stay local; Google Analytics sends site usage data to Google. A drawing is limited to 500 strokes / 20,000 points to keep browser work bounded. Existing saved drawings load with the default name Little weirdo and Automatic walk.
 
 Saved creatures from before face placement keep their former centred face through a one-time local conversion. Saved drawings from before explicit fills keep purple on closed shapes and no fill on open strokes. New and migrated saves use data version 2 with a `fills` entry aligned to every stroke. Missing, extra, or unsupported fill values become unfilled without discarding the drawing. Explicitly faceless saves remain faceless, and invalid stored face coordinates are ignored. Face placement and fill colour do not affect shape-based walk selection.
