@@ -37,7 +37,15 @@ Keyboard users can name a blob, choose a walk, place a centred face, remove it, 
 
 ## Check
 
-The app uses a plain HTML file and local SVG logo assets. `check.cjs` uses Node.js and Playwright for desktop, phone, touch, persistence, undo, PNG export, shape thresholds, explicit legs, circles and ovals, per-shape fills, old saved drawings, different gaits, blinking, body-only reactions, reduced motion, and video export checks. It decodes real MP4 and WebM recordings and checks their dimensions, duration, and changing frames, plus cancellation, tab hiding, resize, unsupported recording, and recorder failures. With Playwright available, run `node check.cjs`. Set `NODE_PATH` to an existing Playwright installation if it is outside this folder. Tests produce images and videos in the system temporary directory. Full tests take approximately 30 seconds and require a Chromium build with MP4 recording support for the MP4 assertion.
+The app uses a plain HTML file and local SVG logo assets. `check.cjs` uses Node.js and Playwright for desktop, phone, touch, persistence, undo, PNG export, shape thresholds, explicit legs, circles and ovals, per-shape fills, old saved drawings, different gaits, blinking, body-only reactions, reduced motion, and video export checks. It also checks the headline and guide without JavaScript, canonical and sharing metadata, structured data, local sharing images, robots.txt, and sitemap XML. It decodes real MP4 and WebM recordings and checks their dimensions, duration, and changing frames, plus cancellation, tab hiding, resize, unsupported recording, and recorder failures. With Playwright available, run `node check.cjs`. Set `NODE_PATH` to an existing Playwright installation if it is outside this folder. Tests produce images and videos in the system temporary directory. Full tests take approximately 30 seconds and require a Chromium build with MP4 recording support for the MP4 assertion.
+
+## Search and deployment
+
+The preferred public URL is `https://www.weirdwalker.online/`. The title, description, visible drawing guide, and questions describe the creature drawing game in the initial HTML. Website and web application structured data describe the actual free app without invented reviews or ratings. Open Graph and Twitter metadata use the existing PNG mascot for sharing previews; these tags do not directly improve search rankings.
+
+Deploy `index.html`, `robots.txt`, `sitemap.xml`, and `assets/` together. The sitemap lists only the canonical homepage. If the domain changes, update the absolute URLs in these three files and the SEO check. Keep the existing redirect from the non-www domain to the www domain; the canonical link also identifies the homepage when `/index.html` is requested.
+
+After deployment, verify that `/robots.txt` and `/sitemap.xml` return their actual files with HTTP 200. In Google Search Console, verify ownership of the site, submit `https://www.weirdwalker.online/sitemap.xml`, and inspect the homepage to request indexing. Use Search Console's search performance report to measure impressions, clicks, and queries over time. Indexing and ranking improvements are not guaranteed by these changes.
 
 ## Scope
 
