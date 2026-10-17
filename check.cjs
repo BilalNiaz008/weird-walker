@@ -17,6 +17,7 @@ async function placeExampleLegs(page,touch=false){await page.locator('#ww-feet')
   const browser=await chromium.launch({headless:true});
   const output=fs.mkdtempSync(path.join(os.tmpdir(),'weird-walker-check-'));
   try {
+    await seo(browser);
     for(const width of [1280,360,320]) {
       const context=await browser.newContext({viewport:{width,height:1000},colorScheme:width===360?'dark':'light',hasTouch:width<400,reducedMotion:width===360?'reduce':'no-preference',acceptDownloads:true});
       const page=await context.newPage(),errors=[];
@@ -43,7 +44,7 @@ async function placeExampleLegs(page,touch=false){await page.locator('#ww-feet')
       const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('weird-walker-v1')));
       assert.equal(saved.strokes.length,1);assert.ok(saved.strokes[0].length>20);
       await page.locator('#ww-feet').click();
-      const tap=async(x,y)=>width<400?page.touchscreen.tap(b.x+b.width*x,b.y+b.height*y):canvas.click({position:{x:b.width*x,y:b.height*y}});
+      const tap=async(x,y)=>{const r=await canvas.boundingBox();return width<400?page.touchscreen.tap(r.x+r.width*x,r.y+r.height*y):canvas.click({position:{x:r.width*x,y:r.height*y}});};
       await tap(.4,.5);await tap(.6,.5);
       assert.match(await page.locator('#ww-status').textContent(),/Two legs/);
       // Undo the second attachment, then complete that same pair again.
@@ -73,10 +74,48 @@ async function placeExampleLegs(page,touch=false){await page.locator('#ww-feet')
     await personalityAndVideo(browser,output);
     await facePlacement(browser,output);
     await explicitDrawing(browser,output);
-    console.log('PASS: drawing, touch legs, leg undo, clear undo, validation, persistence, invalid/blocked storage, keyboard play, pause, PNG export, reduced motion, and 1280/360/320px layouts.');
+    console.log('PASS: static SEO metadata and content, sitemap, drawing, touch legs, leg undo, clear undo, validation, persistence, invalid/blocked storage, keyboard play, pause, PNG export, reduced motion, and 1280/360/320px layouts.');
     console.log('Screenshots: '+output);
   } finally {await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
+
+async function seo(browser){
+  const context=await browser.newContext({javaScriptEnabled:false}),page=await context.newPage();
+  await page.goto(pathToFileURL(path.join(__dirname,'index.html')).href);
+  const canonical=await page.locator('link[rel="canonical"]').getAttribute('href');
+  assert.equal(canonical,'https://www.weirdwalker.online/');
+  assert.equal(await page.locator('h1').count(),1);
+  assert.match(await page.locator('h1').innerText(),/draw.*creature.*walk/i);
+  assert.ok(await page.locator('h1').isVisible());
+  assert.ok(await page.locator('.ww-guide').isVisible());
+  assert.equal(await page.locator('.ww-guide ol li').count(),3);
+  await page.locator('.ww-guide summary').first().press('Enter');
+  assert.ok(await page.locator('.ww-guide details').first().getAttribute('open')!==null);
+  assert.equal(await page.locator('meta[property="og:url"]').getAttribute('content'),canonical);
+  for(const selector of ['meta[property="og:title"]','meta[name="twitter:title"]'])assert.equal(await page.locator(selector).getAttribute('content'),await page.title());
+  assert.match(await page.locator('meta[name="description"]').getAttribute('content'),/creature.*walk/i);
+  assert.equal(await page.locator('meta[name="robots"][content*="noindex"]').count(),0);
+  const graph=JSON.parse(await page.locator('script[type="application/ld+json"]').textContent())['@graph'];
+  const site=graph.find(item=>item['@type']==='WebSite'),app=graph.find(item=>item['@type']==='WebApplication');
+  assert.equal(site.url,canonical);assert.equal(app.url,canonical);assert.equal(app.isPartOf['@id'],site['@id']);
+  assert.equal(app.isAccessibleForFree,true);assert.equal(Number(app.offers.price),0);
+  for(const selector of ['meta[property="og:image"]','meta[name="twitter:image"]']){
+    const image=new URL(await page.locator(selector).getAttribute('content'));
+    assert.equal(image.origin,new URL(canonical).origin);
+    assert.ok(fs.existsSync(path.join(__dirname,image.pathname)));
+    assert.equal(image.href,app.image);
+  }
+  const robots=fs.readFileSync(path.join(__dirname,'robots.txt'),'utf8');
+  assert.match(robots,/User-agent: \*\s+Allow: \/\s/);
+  assert.ok(robots.includes(`Sitemap: ${canonical}sitemap.xml`));
+  const sitemap=fs.readFileSync(path.join(__dirname,'sitemap.xml'),'utf8');
+  const urls=await page.evaluate(xml=>{
+    const doc=new DOMParser().parseFromString(xml,'application/xml');
+    if(doc.querySelector('parsererror'))throw new Error('Invalid sitemap XML');
+    return Array.from(doc.getElementsByTagNameNS('http://www.sitemaps.org/schemas/sitemap/0.9','loc'),node=>node.textContent);
+  },sitemap);
+  assert.deepEqual(urls,[canonical]);await context.close();
+}
 
 async function personalityAndVideo(browser,output){
   const url=pathToFileURL(path.join(__dirname,'index.html')).href;
