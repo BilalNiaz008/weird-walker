@@ -19,7 +19,7 @@ async function placeExampleLegs(page,touch=false){await page.locator('#ww-feet')
   try {
     await seo(browser);
     for(const width of [1280,360,320]) {
-      const context=await browser.newContext({viewport:{width,height:1000},colorScheme:width===360?'dark':'light',hasTouch:width<400,reducedMotion:width===360?'reduce':'no-preference',acceptDownloads:true});
+      const context=await browser.newContext({offline:true,viewport:{width,height:1000},colorScheme:width===360?'dark':'light',hasTouch:width<400,reducedMotion:width===360?'reduce':'no-preference',acceptDownloads:true});
       const page=await context.newPage(),errors=[];
       page.on('pageerror',e=>errors.push(e.message));
       await page.goto(pathToFileURL(path.join(__dirname,'index.html')).href);
@@ -65,22 +65,27 @@ async function placeExampleLegs(page,touch=false){await page.locator('#ww-feet')
       await page.reload();await placeExampleLegs(page,width<400);await play.click();assert.equal(await play.textContent(),'Pause');
       assert.deepEqual(errors,[]);await context.close();
     }
-    // Missing storage must not prevent drawing and animation.
-    const page=await browser.newPage();
+    // Blocked analytics and missing storage must not prevent drawing and animation.
+    const page=await browser.newPage({offline:true});
     await page.addInitScript(()=>{Storage.prototype.setItem=()=>{throw new Error('Storage blocked');};});
     await page.goto(pathToFileURL(path.join(__dirname,'index.html')).href);
+    const tag=page.locator('head script[src="https://www.googletagmanager.com/gtag/js?id=G-HPRPYP1GHM"]');
+    assert.equal(await tag.count(),1);assert.ok(await tag.evaluate(script=>script.async));
+    const commands=await page.evaluate(()=>dataLayer.map(command=>Array.from(command)));
+    assert.equal(commands.length,2);assert.equal(commands[0][0],'js');assert.ok(commands[0][1] instanceof Date);
+    assert.deepEqual(commands[1],['config','G-HPRPYP1GHM']);
     await placeExampleLegs(page,false);await page.locator('#ww-play').click();assert.equal(await page.locator('#ww-play').textContent(),'Pause');
     await page.close();
     await personalityAndVideo(browser,output);
     await facePlacement(browser,output);
     await explicitDrawing(browser,output);
-    console.log('PASS: static SEO metadata and content, sitemap, drawing, touch legs, leg undo, clear undo, validation, persistence, invalid/blocked storage, keyboard play, pause, PNG export, reduced motion, and 1280/360/320px layouts.');
+    console.log('PASS: Analytics initialization with blocked network, static SEO metadata and content, sitemap, drawing, touch legs, leg undo, clear undo, validation, persistence, invalid/blocked storage, keyboard play, pause, PNG export, reduced motion, and 1280/360/320px layouts.');
     console.log('Screenshots: '+output);
   } finally {await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
 
 async function seo(browser){
-  const context=await browser.newContext({javaScriptEnabled:false}),page=await context.newPage();
+  const context=await browser.newContext({offline:true,javaScriptEnabled:false}),page=await context.newPage();
   await page.goto(pathToFileURL(path.join(__dirname,'index.html')).href);
   const canonical=await page.locator('link[rel="canonical"]').getAttribute('href');
   assert.equal(canonical,'https://www.weirdwalker.online/');
@@ -119,7 +124,7 @@ async function seo(browser){
 
 async function personalityAndVideo(browser,output){
   const url=pathToFileURL(path.join(__dirname,'index.html')).href;
-  const page=await browser.newPage({acceptDownloads:true,viewport:{width:1100,height:1050}}),errors=[];
+  const page=await browser.newPage({offline:true,acceptDownloads:true,viewport:{width:1100,height:1050}}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));await page.goto(url);
   const shape=(w,h)=>({strokes:[[{x:200,y:40},{x:200+w,y:40},{x:200+w,y:40+h},{x:200,y:40+h},{x:200,y:40}]],feet:[]});
   for(const [w,h,gait] of [[100,200,'Wobble'],[250,100,'Shuffle'],[100,100,'Bounce'],[100,135,'Bounce'],[100,75,'Bounce'],[100,136,'Wobble'],[100,74,'Shuffle']]){
@@ -171,7 +176,7 @@ async function personalityAndVideo(browser,output){
   }
   assert.deepEqual(errors,[]);await page.close();
   // Exercise the shared renderer at exact animation times without a production test API.
-  const rendered=await browser.newPage();
+  const rendered=await browser.newPage({offline:true});
   const instrumented=fs.readFileSync(path.join(__dirname,'index.html'),'utf8').replace('  history=[];', '  window.walkerCheck={renderScene,snapshot};\n  history=[];');
   await rendered.setContent(instrumented);
   const features=await rendered.evaluate(()=>{
@@ -201,7 +206,7 @@ async function personalityAndVideo(browser,output){
   await rendered.locator('#ww-status').evaluate(e=>e.textContent='Untouched');await rendered.locator('#ww-canvas').click({position:{x:25,y:40}});
   assert.equal(await rendered.locator('#ww-status').textContent(),'Untouched');await rendered.close();
   for(const failure of ['unsupported','error','start']){
-    const p=await browser.newPage();await p.addInitScript(failure=>{
+    const p=await browser.newPage({offline:true});await p.addInitScript(failure=>{
       if(failure==='unsupported'){window.MediaRecorder=undefined;return;}
       const Original=MediaRecorder;
       window.MediaRecorder=class extends Original {
@@ -220,7 +225,7 @@ async function personalityAndVideo(browser,output){
 async function facePlacement(browser,output){
   const url=pathToFileURL(path.join(__dirname,'index.html')).href;
   for(const width of [1100,360]){
-    const context=await browser.newContext({viewport:{width,height:1100},hasTouch:width===360,colorScheme:width===360?'dark':'light'});
+    const context=await browser.newContext({offline:true,viewport:{width,height:1100},hasTouch:width===360,colorScheme:width===360?'dark':'light'});
     const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(url);
     const state=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('weird-walker-v1')));
     const tap=async(x,y)=>{
@@ -270,7 +275,7 @@ async function facePlacement(browser,output){
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.deepEqual(errors,[]);await context.close();
   }
   // Verify that all face features use the selected drawing-space anchor and stay in frame.
-  const page=await browser.newPage();
+  const page=await browser.newPage({offline:true});
   await page.setContent(fs.readFileSync(path.join(__dirname,'index.html'),'utf8').replace('  history=[];','  window.walkerCheck={renderScene,snapshot};\n  history=[];'));
   const result=await page.evaluate(()=>{
     const c=document.createElement('canvas'),ctx=c.getContext('2d'),ellipses=[],original=ctx.ellipse.bind(ctx);
@@ -295,7 +300,7 @@ async function facePlacement(browser,output){
 async function explicitDrawing(browser,output){
   const url=pathToFileURL(path.join(__dirname,'index.html')).href;
   for(const width of [1100,360]){
-    const touch=width===360,context=await browser.newContext({viewport:{width,height:1100},hasTouch:touch,colorScheme:touch?'dark':'light',acceptDownloads:true});
+    const touch=width===360,context=await browser.newContext({offline:true,viewport:{width,height:1100},hasTouch:touch,colorScheme:touch?'dark':'light',acceptDownloads:true});
     const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(url);
     const state=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('weird-walker-v1')));
     let data=await state();assert.deepEqual(data.feet,[]);assert.deepEqual(data.fills,[null]);
@@ -329,7 +334,7 @@ async function explicitDrawing(browser,output){
     await placeExampleLegs(page,touch);const cancelStart=page.locator('#ww-video').click();await cancelStart;assert.equal(await page.locator('#ww-export').isVisible(),true);await page.locator('#ww-cancel').click();
     await page.screenshot({path:path.join(output,`explicit-tools-${width}.png`),fullPage:true});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.deepEqual(errors,[]);await context.close();
   }
-  const page=await browser.newPage();await page.goto(url);
+  const page=await browser.newPage({offline:true});await page.goto(url);
   const closedStroke=[{x:200,y:80},{x:400,y:80},{x:400,y:220},{x:200,y:220},{x:200,y:80}],openStroke=[{x:50,y:50},{x:100,y:100}];
   const legacy={strokes:[closedStroke,openStroke],feet:[{x:250,y:210},{x:350,y:210}],face:null,name:'Old',walk:'auto'};
   await page.evaluate(d=>localStorage.setItem('weird-walker-v1',JSON.stringify(d)),legacy);await page.reload();assert.deepEqual((await page.evaluate(()=>JSON.parse(localStorage.getItem('weird-walker-v1')).fills)),['#c9b3ef',null]);
