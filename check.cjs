@@ -18,6 +18,7 @@ async function placeExampleLegs(page,touch=false){await page.locator('#ww-feet')
   const output=fs.mkdtempSync(path.join(os.tmpdir(),'weird-walker-check-'));
   try {
     await seo(browser);
+    await animationTiming(browser);
     for(const width of [1280,360,320]) {
       const context=await browser.newContext({offline:true,viewport:{width,height:1000},colorScheme:width===360?'dark':'light',hasTouch:width<400,reducedMotion:width===360?'reduce':'no-preference',acceptDownloads:true});
       const page=await context.newPage(),errors=[];
@@ -120,6 +121,45 @@ async function seo(browser){
     return Array.from(doc.getElementsByTagNameNS('http://www.sitemaps.org/schemas/sitemap/0.9','loc'),node=>node.textContent);
   },sitemap);
   assert.deepEqual(urls,[canonical]);await context.close();
+}
+
+async function animationTiming(browser){
+  const page=await browser.newPage({offline:true});
+  const instrumented=fs.readFileSync(path.join(__dirname,'index.html'),'utf8').replace('  history=[];','  window.walkerTime=()=>time;\n  history=[];');
+  await page.setContent(instrumented);
+  await placeExampleLegs(page,false);
+  await page.evaluate(()=>{
+    let now=0,next=0;
+    const pending=new Map();
+    performance.now=()=>now;
+    window.requestAnimationFrame=callback=>{const id=++next;pending.set(id,callback);return id;};
+    window.cancelAnimationFrame=id=>pending.delete(id);
+    window.advanceWalkerFrame=milliseconds=>{
+      now+=milliseconds;
+      const callbacks=Array.from(pending.values());pending.clear();
+      callbacks.forEach(callback=>callback(now));
+    };
+  });
+  const play=page.locator('#ww-play');
+  for(const fps of [120,60,30,15,10]){
+    await play.dispatchEvent('click');
+    await page.evaluate(fps=>{for(let i=0;i<fps;i++)advanceWalkerFrame(1000/fps);},fps);
+    assert.ok(Math.abs(await page.evaluate(()=>walkerTime())-1)<1e-9,`One second of walking at ${fps} fps`);
+    await play.dispatchEvent('click');
+    await page.evaluate(()=>advanceWalkerFrame(5000));
+    assert.ok(Math.abs(await page.evaluate(()=>walkerTime())-1)<1e-9,'Pause freezes animation time');
+    await play.dispatchEvent('click');
+    await page.evaluate(()=>advanceWalkerFrame(100));
+    assert.ok(Math.abs(await page.evaluate(()=>walkerTime())-1.1)<1e-9,'Resume excludes paused time');
+    await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));advanceWalkerFrame(5000);delete document.hidden;});
+    assert.ok(Math.abs(await page.evaluate(()=>walkerTime())-1.1)<1e-9,'Hidden tabs freeze animation time');
+    await play.dispatchEvent('click');
+    await page.evaluate(()=>advanceWalkerFrame(100));
+    assert.ok(Math.abs(await page.evaluate(()=>walkerTime())-1.2)<1e-9,'Returning from a hidden tab excludes hidden time');
+    await page.locator('#ww-edit').dispatchEvent('click');
+  }
+  await page.close();
+  console.log('PASS: equal walking speed at 120/60/30/15/10 fps, pause/resume, and hidden-tab timing.');
 }
 
 async function personalityAndVideo(browser,output){
