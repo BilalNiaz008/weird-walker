@@ -78,6 +78,7 @@ async function placeExampleLegs(page,touch=false){await page.locator('#ww-feet')
     await placeExampleLegs(page,false);await page.locator('#ww-play').click();assert.equal(await page.locator('#ww-play').textContent(),'Pause');
     await page.close();
     await personalityAndVideo(browser,output);
+    await gifExport(browser,output);
     await facePlacement(browser,output);
     await explicitDrawing(browser,output);
     console.log('PASS: Analytics initialization with blocked network, static SEO metadata and content, sitemap, drawing, touch legs, leg undo, clear undo, validation, persistence, invalid/blocked storage, keyboard play, pause, PNG export, reduced motion, and 1280/360/320px layouts.');
@@ -260,6 +261,55 @@ async function personalityAndVideo(browser,output){
     await p.close();
   }
   console.log('PASS: shape thresholds, manual walks, names, migration, distinct gaits, timed blinking, body-only tap reactions, reduced-motion hop suppression, video title, recording cancellation, hidden-tab interruption, decoded six-second MP4/WebM, resize, unsupported/failed recorders.');
+}
+
+async function gifExport(browser,output){
+  const url=pathToFileURL(path.join(__dirname,'index.html')).href;
+  for(const width of [1100,360]){
+    const phone=width===360,context=await browser.newContext({offline:true,acceptDownloads:true,viewport:{width,height:1100},colorScheme:phone?'dark':'light',reducedMotion:phone?'reduce':'no-preference'});
+    const page=await context.newPage(),errors=[],downloads=[];
+    page.on('pageerror',e=>errors.push(e.message));page.on('download',d=>downloads.push(d));
+    if(phone)await page.addInitScript(()=>{window.MediaRecorder=undefined;});
+    await page.goto(url);await page.locator('#ww-gif').click();assert.match(await page.locator('#ww-status').textContent(),/Place two legs/);
+    await tapCanvas(page,290,190);await page.locator('#ww-gif').click();assert.match(await page.locator('#ww-status').textContent(),/Place two legs/);
+    await tapCanvas(page,350,190);await page.locator('#ww-name').fill('GIF Noodle');await page.locator('#ww-walk').selectOption('bounce');
+    if(phone){await page.locator('#ww-fill').click();await tapCanvas(page,320,147);await page.locator('#ww-face').click();await page.locator('#ww-face-centre').click();assert.ok(await page.locator('#ww-video').isDisabled());}
+    await page.locator('#ww-play').click();await page.locator('#ww-play').click();
+    const saved=await page.evaluate(()=>localStorage.getItem('weird-walker-v1')),paused=await page.locator('#ww-canvas').evaluate(c=>c.toDataURL());
+    await page.locator('#ww-gif').click();assert.ok(await page.locator('#ww-name').isDisabled());assert.ok(await page.locator('#ww-video').isDisabled());
+    await page.locator('#ww-cancel').click();assert.ok(await page.locator('#ww-export').isHidden());assert.ok(await page.locator('#ww-name').isEnabled());
+    assert.equal(await page.locator('#ww-canvas').evaluate(c=>c.toDataURL()),paused);assert.equal(await page.locator('#ww-play').textContent(),'Keep walking');
+    await page.locator('#ww-play').click();await page.locator('#ww-gif').click();await page.locator('#ww-cancel').click();assert.equal(await page.locator('#ww-play').textContent(),'Pause');
+    await page.locator('#ww-gif').click();
+    await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));delete document.hidden;});
+    assert.ok(await page.locator('#ww-export').isHidden());assert.match(await page.locator('#ww-status').textContent(),/hidden/);assert.equal(await page.locator('#ww-play').textContent(),'Keep walking');
+    const downloading=page.waitForEvent('download',{timeout:30000});await page.locator('#ww-gif').press('Enter');
+    const download=await downloading;assert.equal(download.suggestedFilename(),'weird-walker.gif');
+    const file=path.join(output,`walk-${width}.gif`);await download.saveAs(file);
+    const bytes=fs.readFileSync(file);assert.equal(bytes.subarray(0,6).toString(),'GIF89a');
+    const info=await page.evaluate(async data=>{
+      const decoder=new ImageDecoder({data:Uint8Array.from(atob(data),c=>c.charCodeAt(0)),type:'image/gif'});
+      await decoder.tracks.ready;const track=decoder.tracks.selectedTrack,frames=[],durations=[],sizes=new Set();
+      const c=document.createElement('canvas');c.width=480;c.height=480;const ctx=c.getContext('2d');
+      for(let i=0;i<track.frameCount;i++){
+        const {image}=await decoder.decode({frameIndex:i});durations.push(image.duration);sizes.add(`${image.displayWidth}x${image.displayHeight}`);
+        if([0,35,119].includes(i)){ctx.drawImage(image,0,0);frames.push(c.toDataURL());}image.close();
+      }
+      const result={sizes:Array.from(sizes),count:track.frameCount,loops:track.repetitionCount===Infinity,duration:durations.reduce((a,b)=>a+b,0),changes:new Set(frames).size,first:frames[0]};decoder.close();return result;
+    },bytes.toString('base64'));
+    assert.deepEqual(info.sizes,['480x480']);assert.equal(info.count,120);assert.ok(info.loops);assert.equal(info.duration,6000000);assert.equal(info.changes,3);
+    fs.writeFileSync(path.join(output,`gif-frame-${width}.png`),Buffer.from(info.first.split(',')[1],'base64'));
+    assert.equal(await page.evaluate(()=>localStorage.getItem('weird-walker-v1')),saved);assert.equal(await page.locator('#ww-play').textContent(),'Keep walking');
+    assert.ok(await page.locator('#ww-name').isEnabled());assert.equal(await page.locator('#ww-video').isDisabled(),phone);assert.equal(downloads.length,1);
+    assert.deepEqual(errors,[]);await context.close();
+  }
+  const page=await browser.newPage({offline:true}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await placeExampleLegs(page);
+  await page.evaluate(()=>{window.gifenc={...window.gifenc,quantize(){throw new Error('Encoder failed');}};});
+  await page.locator('#ww-gif').click();await page.waitForFunction(()=>document.getElementById('ww-export').hidden);
+  assert.match(await page.locator('#ww-status').textContent(),/GIF export failed/);assert.ok(await page.locator('#ww-name').isEnabled());
+  await page.evaluate(()=>{window.gifenc=undefined;});await page.locator('#ww-gif').click();assert.match(await page.locator('#ww-status').textContent(),/could not load/);
+  await page.locator('#ww-play').click();assert.equal(await page.locator('#ww-play').textContent(),'Pause');assert.deepEqual(errors,[]);await page.close();
+  console.log('PASS: decoded looping six-second GIFs, 120 changing frames, desktop/mobile, light/dark, reduced motion, faceless/filled creatures, no MediaRecorder, leg gates, cancellation, playback restore, hidden tabs, and encoder failures.');
 }
 
 async function facePlacement(browser,output){

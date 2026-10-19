@@ -15,12 +15,12 @@
 <meta name="theme-color" content="#6751a8">
 <link rel="icon" href="assets/weird-walker-icon.svg" type="image/svg+xml">
 <title>Weird Walker – Free Online Creature Drawing Game</title>
-<meta name="description" content="Draw your own creature, add two legs, and watch it walk. Play Weird Walker free in your browser, then save your drawing as a PNG or a short video. No signup.">
+<meta name="description" content="Draw your own creature, add two legs, and watch it walk. Play Weird Walker free in your browser, then save a PNG, animated GIF, or short video. No signup.">
 <link rel="canonical" href="https://www.weirdwalker.online/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Weird Walker">
 <meta property="og:title" content="Weird Walker – Free Online Creature Drawing Game">
-<meta property="og:description" content="Draw your own creature, add two legs, and watch it walk. Play free in your browser and save a picture or a short video. No signup.">
+<meta property="og:description" content="Draw your own creature, add two legs, and watch it walk. Play free in your browser and save a picture, animated GIF, or short video. No signup.">
 <meta property="og:url" content="https://www.weirdwalker.online/">
 <meta property="og:image" content="https://www.weirdwalker.online/assets/weird-walker-icon.png">
 <meta property="og:image:width" content="1024">
@@ -28,7 +28,7 @@
 <meta property="og:image:alt" content="The lilac Weird Walker doodle creature with two walking legs">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Weird Walker – Free Online Creature Drawing Game">
-<meta name="twitter:description" content="Draw your own creature, add two legs, and watch it walk. Play free in your browser and save a picture or a short video. No signup.">
+<meta name="twitter:description" content="Draw your own creature, add two legs, and watch it walk. Play free in your browser and save a picture, animated GIF, or short video. No signup.">
 <meta name="twitter:image" content="https://www.weirdwalker.online/assets/weird-walker-icon.png">
 <meta name="twitter:image:alt" content="The lilac Weird Walker doodle creature with two walking legs">
 <script type="application/ld+json">
@@ -47,7 +47,7 @@
       "@id": "https://www.weirdwalker.online/#app",
       "url": "https://www.weirdwalker.online/",
       "name": "Weird Walker",
-      "description": "A free online creature drawing game. Draw a body, add two legs and an optional face, choose a walk, and save an image or a six-second video.",
+      "description": "A free online creature drawing game. Draw a body, add two legs and an optional face, choose a walk, and save an image, animated GIF, or six-second video.",
       "applicationCategory": "GameApplication",
       "operatingSystem": "Any",
       "browserRequirements": "Requires JavaScript and HTML5 Canvas support.",
@@ -130,9 +130,10 @@ body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
   <span class="ww-caption" id="ww-caption">Meet your first questionable creation.</span>
   <canvas id="ww-canvas" aria-label="Creature drawing area. Draw with a mouse or finger. Alternatively, use Try a blob and Bring it to life with the keyboard.">Use Try a blob to create a creature, then Bring it to life to animate it.</canvas>
 </div>
-<div class="ww-bottom"><p class="ww-status" id="ww-status" aria-live="polite">Try this little blob, or clear the page and draw your own.</p><div class="ww-actions"><button id="ww-hello" type="button" hidden>Say hello</button><button id="ww-download" type="button">Save image</button><button id="ww-video" type="button">Save video</button><button id="ww-edit" type="button" hidden>Back to drawing</button><button class="ww-primary" id="ww-play" type="button">Bring it to life</button></div></div>
+<div class="ww-bottom"><p class="ww-status" id="ww-status" aria-live="polite">Try this little blob, or clear the page and draw your own.</p><div class="ww-actions"><button id="ww-hello" type="button" hidden>Say hello</button><button id="ww-download" type="button">Save image</button><button id="ww-gif" type="button">Save GIF</button><button id="ww-video" type="button">Save video</button><button id="ww-edit" type="button" hidden>Back to drawing</button><button class="ww-primary" id="ww-play" type="button">Bring it to life</button></div></div>
 <div class="ww-export" id="ww-export" hidden><label for="ww-progress" id="ww-progress-label">Recording 0 / 6 seconds</label><progress id="ww-progress" max="6" value="0"></progress><button id="ww-cancel" type="button">Cancel</button></div>
 <p class="ww-note" id="ww-video-note">Video: 6 seconds, silent. MP4 when available, otherwise WebM.</p>
+<p class="ww-note">GIF: a looping 6-second walk, 480 × 480 pixels.</p>
 <p class="ww-note">Draw outlines, make circles, then choose if and how to fill them. Legs and faces are always your choice. Your drawing stays in this browser.</p>
 <p class="ww-note">We use Google Analytics to understand site traffic. Your drawings stay in this browser.</p>
 <section class="ww-guide" aria-labelledby="ww-about-heading">
@@ -159,13 +160,14 @@ body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
   </details>
   <details>
     <summary>Can I save my animated drawing?</summary>
-    <p>Use Save image to download a PNG, or Save video for a silent, six-second, 720 × 720 clip. Video downloads as MP4 when supported, otherwise WebM. If your browser cannot record video, you can still save an image.</p>
+    <p>Use Save image to download a PNG, Save GIF for a looping, six-second, 480 × 480 animation, or Save video for a silent, six-second, 720 × 720 clip. Video downloads as MP4 when supported, otherwise WebM. GIF and image downloads also work when video recording is unavailable.</p>
   </details>
   <details>
     <summary>Where is my creature saved?</summary>
-    <p>Your latest creature is saved in this browser on this device. The app does not upload your drawing. Clearing browser data removes the saved creature, so download an image or video if you want to keep a copy.</p>
+    <p>Your latest creature is saved in this browser on this device. The app does not upload your drawing. Clearing browser data removes the saved creature, so download an image, GIF, or video if you want to keep a copy.</p>
   </details>
 </section>
+<script src="assets/vendor/gifenc.js"></script>
 <script>
 (() => {
   const root = document.getElementById('weird-walker');
@@ -416,17 +418,44 @@ body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
   function finishExport(job,message,blob){
     if(recording!==job)return;
     recording=null;clearInterval(job.timer);clearTimeout(job.watchdog);
-    job.recorder.ondataavailable=null;job.recorder.onstop=null;job.recorder.onerror=null;
-    try{if(job.recorder.state!=='inactive')job.recorder.stop();}catch{}
-    job.stream.getTracks().forEach(track=>track.stop());
+    if(job.recorder){
+      job.recorder.ondataavailable=null;job.recorder.onstop=null;job.recorder.onerror=null;
+      try{if(job.recorder.state!=='inactive')job.recorder.stop();}catch{}
+    }
+    job.stream?.getTracks().forEach(track=>track.stop());
     job.controls.forEach(([element,disabled])=>element.disabled=disabled);
     $('export').hidden=true;$('status').textContent=message;
-    if(blob)downloadBlob(blob,blob.type.startsWith('video/mp4')?'mp4':'webm');
+    if(blob)downloadBlob(blob,blob.type==='image/gif'?'gif':blob.type.startsWith('video/mp4')?'mp4':'webm');
     if(job.wasPlaying&&!document.hidden){playing=true;lastTime=performance.now();frame=requestAnimationFrame(tick);}
     else if(job.wasPlaying){$('play').textContent='Keep walking';$('hello').disabled=true;}
   }
-  function cancelExport(message='Video cancelled. Your creature is unchanged.') {if(recording)finishExport(recording,message);}
+  function cancelExport(message='Export cancelled. Your creature is unchanged.') {if(recording)finishExport(recording,message);}
   $('cancel').onclick=()=>cancelExport();
+  $('gif').onclick=async()=>{
+    if(recording||pointer!==null)return;
+    const b=bounds();
+    if(!b||b.r-b.l<15||b.b-b.t<15){$('status').textContent='Draw a bigger creature before saving a GIF.';return;}
+    if(requireLegs())return;
+    if(!window.gifenc){$('status').textContent='The GIF encoder could not load. Reload the page or try Save image.';return;}
+    const job={wasPlaying:playing,controls:Array.from(root.querySelectorAll('button,input,select')).filter(e=>e!==$('cancel')).map(e=>[e,e.disabled])};
+    recording=job;stop();job.controls.forEach(([element])=>element.disabled=true);
+    $('export').hidden=false;$('progress').value=0;$('progress-label').textContent='Creating GIF 0 / 6 seconds';$('status').textContent='Creating a six-second GIF. Keep this tab open.';
+    try{
+      const creature=structuredClone(snapshot()),gifCanvas=document.createElement('canvas');gifCanvas.width=480;gifCanvas.height=480;
+      const output=gifCanvas.getContext('2d',{willReadFrequently:true}),options={walking:true,reduced:reduced.matches,ink:getComputedStyle(root).color,background:getComputedStyle(canvas.parentElement).backgroundColor,title:true};
+      const {GIFEncoder,quantize,applyPalette}=window.gifenc,gif=GIFEncoder();
+      for(let i=0;i<120;i++){
+        await new Promise(resolve=>setTimeout(resolve,0));
+        if(recording!==job)return;
+        renderScene(output,480,480,i/20,creature,options);
+        const pixels=output.getImageData(0,0,480,480).data,palette=quantize(pixels,256);
+        gif.writeFrame(applyPalette(pixels,palette),480,480,{palette,delay:50,repeat:0});
+        $('progress').value=(i+1)/20;
+        const label=`Creating GIF ${Math.floor((i+1)/20)} / 6 seconds`;if($('progress-label').textContent!==label)$('progress-label').textContent=label;
+      }
+      gif.finish();finishExport(job,'Your looping GIF is ready.',new Blob([gif.bytesView()],{type:'image/gif'}));
+    }catch{finishExport(job,'GIF export failed. Your creature is unchanged; try again or save an image.');}
+  };
   $('video').onclick=()=>{
     if(recording||pointer!==null)return;
     const b=bounds();
@@ -467,9 +496,9 @@ body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
     job.timer=setInterval(paint,1000/30);
     job.watchdog=setTimeout(()=>finishExport(job,'Recording timed out. Try again or save an image.'),10000);
   };
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelExport('Recording cancelled because the tab was hidden. Try again when you return.');if(playing){stop();$('play').textContent='Keep walking';$('hello').disabled=true;}}});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelExport('Export cancelled because the tab was hidden. Try again when you return.');if(playing){stop();$('play').textContent='Keep walking';$('hello').disabled=true;}}});
   window.addEventListener('pagehide',()=>cancelExport());
-  if(!supportedTypes().length){$('video').disabled=true;$('video-note').textContent='Video recording is unavailable in this browser. PNG image export still works.';}
+  if(!supportedTypes().length){$('video').disabled=true;$('video-note').textContent='Video recording is unavailable in this browser. GIF and PNG image export still work.';}
   if(restore()){$('status').textContent='Welcome back. Your last creature is right here.';render();}else sample();
   history=[];$('undo').disabled=true;
   $('name').value=creatureName;$('walk').value=walk;
