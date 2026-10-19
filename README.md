@@ -43,7 +43,7 @@ The app uses a plain HTML file and local SVG logo assets. `check.cjs` uses Node.
 
 The preferred public URL is `https://www.weirdwalker.online/`. The title, description, visible drawing guide, and questions describe the creature drawing game in the initial HTML. Website and web application structured data describe the actual free app without invented reviews or ratings. Open Graph and Twitter metadata use the existing PNG mascot for sharing previews; these tags do not directly improve search rankings.
 
-Deploy `index.html`, `robots.txt`, `sitemap.xml`, and `assets/` together. The sitemap lists only the canonical homepage. If the domain changes, update the absolute URLs in these three files and the SEO check. Keep the existing redirect from the non-www domain to the www domain; the canonical link also identifies the homepage when `/index.html` is requested.
+Deploy `index.html`, `robots.txt`, `sitemap.xml`, `ads.txt`, and `assets/` together. The sitemap lists only the canonical homepage. If the domain changes, update the absolute URLs in `index.html`, `robots.txt`, `sitemap.xml`, and the SEO check. Keep the existing redirect from the non-www domain to the www domain; the canonical link also identifies the homepage when `/index.html` is requested.
 
 After deployment, verify that `/robots.txt` and `/sitemap.xml` return their actual files with HTTP 200. In Google Search Console, verify ownership of the site, submit `https://www.weirdwalker.online/sitemap.xml`, and inspect the homepage to request indexing. Use Search Console's search performance report to measure impressions, clicks, and queries over time. Indexing and ranking improvements are not guaranteed by these changes.
 
