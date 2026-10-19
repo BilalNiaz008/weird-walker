@@ -167,6 +167,7 @@ async function personalityAndVideo(browser,output){
   const url=pathToFileURL(path.join(__dirname,'index.html')).href;
   const page=await browser.newPage({offline:true,acceptDownloads:true,viewport:{width:1100,height:1050}}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));await page.goto(url);
+  assert.ok(await page.locator('#ww-transparent').isChecked());
   const shape=(w,h)=>({strokes:[[{x:200,y:40},{x:200+w,y:40},{x:200+w,y:40+h},{x:200,y:40+h},{x:200,y:40}]],feet:[]});
   for(const [w,h,gait] of [[100,200,'Wobble'],[250,100,'Shuffle'],[100,100,'Bounce'],[100,135,'Bounce'],[100,75,'Bounce'],[100,136,'Wobble'],[100,74,'Shuffle']]){
     await page.evaluate(data=>localStorage.setItem('weird-walker-v1',JSON.stringify(data)),shape(w,h));await page.reload();
@@ -186,20 +187,22 @@ async function personalityAndVideo(browser,output){
   assert.match(await page.locator('#ww-status').textContent(),/Noodle says hello/);
   await page.locator('#ww-play').click();const paused=await page.locator('#ww-canvas').evaluate(c=>c.toDataURL());
   await page.locator('#ww-canvas').click({position:{x:25,y:40}});assert.equal(await page.locator('#ww-canvas').evaluate(c=>c.toDataURL()),paused);
-  await page.locator('#ww-video').click();assert.equal(await page.locator('#ww-name').isDisabled(),true);
+  await page.locator('#ww-video').click();assert.equal(await page.locator('#ww-name').isDisabled(),true);assert.ok(await page.locator('#ww-transparent').isDisabled());
   await page.locator('#ww-cancel').click();assert.equal(await page.locator('#ww-name').isDisabled(),false);
   assert.equal(await page.locator('#ww-play').textContent(),'Keep walking');
   assert.equal(await page.locator('#ww-canvas').evaluate(c=>c.toDataURL()),paused);
   await page.locator('#ww-video').click();await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});
   assert.equal(await page.locator('#ww-export').isVisible(),false);assert.match(await page.locator('#ww-status').textContent(),/hidden/);
   await page.evaluate(()=>{delete document.hidden;});
-  for(const format of ['mp4','webm']){
+  for(const [format,transparent] of [['mp4',false],['webm',false],['webm',true]]){
+    await page.locator('#ww-transparent').setChecked(transparent);
+    assert.match(await page.locator('#ww-video-note').textContent(),transparent?/Transparent WebM/:/stage background/);
     if(format==='webm')await page.evaluate(()=>{const Original=MediaRecorder;window.MediaRecorder=class extends Original {constructor(stream,options){if(options.mimeType.startsWith('video/mp4'))throw new Error('MP4 unavailable');super(stream,options);}};});
     await page.setViewportSize({width:format==='mp4'?900:360,height:1050});
     const saved=await page.evaluate(()=>localStorage.getItem('weird-walker-v1'));
     const downloadPromise=page.waitForEvent('download',{timeout:15000});await page.locator('#ww-video').click();
     const download=await downloadPromise;assert.equal(download.suggestedFilename(),`weird-walker.${format}`);
-    const file=path.join(output,`walk.${format}`);await download.saveAs(file);
+    const file=path.join(output,`walk${transparent?'-transparent':''}.${format}`);await download.saveAs(file);
     assert.equal(await page.evaluate(()=>localStorage.getItem('weird-walker-v1')),saved);
     assert.equal(await page.locator('#ww-play').textContent(),'Keep walking');
     const data=fs.readFileSync(file).toString('base64');
@@ -208,12 +211,16 @@ async function personalityAndVideo(browser,output){
       const video=document.createElement('video');video.muted=true;video.src=src;
       await new Promise((resolve,reject)=>{video.onloadeddata=resolve;video.onerror=()=>reject(new Error('Video does not decode'));});
       const c=document.createElement('canvas');c.width=720;c.height=720;const ctx=c.getContext('2d');
-      const seek=async t=>{await new Promise(resolve=>{video.onseeked=resolve;video.currentTime=t;});ctx.drawImage(video,0,0);return c.toDataURL();};
+      const seek=async t=>{await new Promise(resolve=>{video.onseeked=resolve;video.currentTime=t;});ctx.clearRect(0,0,720,720);ctx.drawImage(video,0,0);const pixels=ctx.getImageData(0,0,720,720).data;return {image:c.toDataURL(),alpha:pixels[3],visible:pixels.some((value,i)=>i%4===3&&value>=254)};};
       const first=await seek(.25),second=await seek(2.5);let duration=video.duration;
       if(!Number.isFinite(duration)){await seek(10000);duration=video.currentTime;}
-      const result={width:video.videoWidth,height:video.videoHeight,duration,changes:first!==second};URL.revokeObjectURL(src);return result;
+      const result={width:video.videoWidth,height:video.videoHeight,duration,changes:first.image!==second.image,alpha:[first.alpha,second.alpha],visible:first.visible&&second.visible};URL.revokeObjectURL(src);return result;
     },{data,format});
     assert.equal(info.width,720);assert.equal(info.height,720);assert.ok(info.changes);assert.ok(info.duration>5.7&&info.duration<6.5,JSON.stringify(info));
+    if(transparent)assert.deepEqual(info.alpha,[0,0]);
+    else assert.ok(info.alpha.every(alpha=>alpha>=254),'Solid background stays opaque within lossy WebM rounding');
+    assert.ok(info.visible);
+    assert.ok(await page.locator('#ww-transparent').isEnabled());
   }
   assert.deepEqual(errors,[]);await page.close();
   // Exercise the shared renderer at exact animation times without a production test API.
@@ -246,10 +253,11 @@ async function personalityAndVideo(browser,output){
   assert.ok(body);await rendered.mouse.click(body.x,body.y);assert.match(await rendered.locator('#ww-status').textContent(),/says hello/);
   await rendered.locator('#ww-status').evaluate(e=>e.textContent='Untouched');await rendered.locator('#ww-canvas').click({position:{x:25,y:40}});
   assert.equal(await rendered.locator('#ww-status').textContent(),'Untouched');await rendered.close();
-  for(const failure of ['unsupported','error','start']){
+  for(const failure of ['unsupported','mp4-only','error','start']){
     const p=await browser.newPage({offline:true});await p.addInitScript(failure=>{
       if(failure==='unsupported'){window.MediaRecorder=undefined;return;}
       const Original=MediaRecorder;
+      if(failure==='mp4-only'){window.MediaRecorder=class extends Original {static isTypeSupported(type){return type.startsWith('video/mp4')&&Original.isTypeSupported(type);}};return;}
       window.MediaRecorder=class extends Original {
         start(){if(failure==='start')throw new Error('Cannot initialise');super.start();setTimeout(()=>this.dispatchEvent(new Event('error')),100);}
       };
@@ -257,10 +265,14 @@ async function personalityAndVideo(browser,output){
     await p.goto(url);
     await placeExampleLegs(p,false);
     if(failure==='unsupported'){assert.equal(await p.locator('#ww-video').isDisabled(),true);assert.match(await p.locator('#ww-video-note').textContent(),/unavailable/);}
+    else if(failure==='mp4-only'){
+      assert.ok(await p.locator('#ww-video').isDisabled());assert.match(await p.locator('#ww-video-note').textContent(),/Turn off transparency/);
+      await p.locator('#ww-transparent').uncheck();assert.ok(await p.locator('#ww-video').isEnabled());await p.locator('#ww-video').click();await p.locator('#ww-cancel').click();
+    }
     else{await p.locator('#ww-video').click();await p.waitForTimeout(200);assert.equal(await p.locator('#ww-export').isVisible(),false);assert.equal(await p.locator('#ww-name').isDisabled(),false);assert.match(await p.locator('#ww-status').textContent(),/failed|could not start/);}
     await p.close();
   }
-  console.log('PASS: shape thresholds, manual walks, names, migration, distinct gaits, timed blinking, body-only tap reactions, reduced-motion hop suppression, video title, recording cancellation, hidden-tab interruption, decoded six-second MP4/WebM, resize, unsupported/failed recorders.');
+  console.log('PASS: shape thresholds, manual walks, names, migration, distinct gaits, timed blinking, body-only tap reactions, reduced-motion hop suppression, video title, recording cancellation, hidden-tab interruption, decoded six-second MP4/WebM, transparent WebM alpha, opaque backgrounds, MP4-only fallback, resize, unsupported/failed recorders.');
 }
 
 async function gifExport(browser,output){
