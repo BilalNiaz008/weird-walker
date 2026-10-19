@@ -317,7 +317,7 @@ body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
     hit=renderScene(ctx,width,height,time,creature,{ink:getComputedStyle(root).color,dpr:Math.min(devicePixelRatio||1,2),walking,reduced:reduced.matches,reactionAt,placing:mode==='feet'&&!walking});
   }
 
-  function tick(now) { if(!playing)return;time+=Math.min((now-lastTime)/1000,.05);lastTime=now;render();frame=requestAnimationFrame(tick); }
+  function tick(now) { if(!playing)return;time+=(now-lastTime)/1000;lastTime=now;render();frame=requestAnimationFrame(tick); }
   function stop() {playing=false;cancelAnimationFrame(frame);}
   function edit() {stop();walking=false;time=0;reactionAt=-100;$('hello').hidden=true;$('tools').hidden=false;$('edit').hidden=true;$('play').textContent='Bring it to life';syncTools();$('status').textContent='A little adjustment before the next adventure?';render();}
   function point(e){const r=canvas.getBoundingClientRect(),scale=drawingScale();return {x:Math.max(0,Math.min(640,(e.clientX-r.left-width/2)/scale+320)),y:Math.max(20,Math.min(270,(e.clientY-r.top-height/2)/scale+170))};}

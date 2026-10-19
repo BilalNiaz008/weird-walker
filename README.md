@@ -28,6 +28,7 @@ For a local web address, run `python -m http.server 8790 --bind 127.0.0.1` from 
 - Give your creature a name (up to 40 characters). Names and walk choices save locally and are independent of drawing undo.
 - Automatic walking uses body height / width, excluding legs: above 1.35 is Wobble, below 0.75 is Shuffle, and everything else is Bounce. Choose any walk manually to experiment.
 - While walking, eyes blink every four seconds. Tap the body or use Say hello for a surprised expression and a small hop. Pause freezes movement and reactions.
+- Walking follows elapsed time, so a lower frame rate makes movement less smooth without slowing the walk. Pausing or leaving the tab freezes the animation clock.
 - Save video records a silent six-second, 720 × 720 clip at a requested 30 fps, including your creature's name. The browser chooses MP4 when available, otherwise WebM. Encoding support and actual frame pacing depend on the browser and device.
 - Recording uses a snapshot and temporarily locks editing. Cancel, recording errors, or leaving the tab discard unfinished output and release the recorder. Your drawing and previous playback position remain intact; returning from a hidden tab requires Keep walking.
 - If video recording is unavailable, PNG export still works. MP4/WebM files download locally; the app does not publish them.
