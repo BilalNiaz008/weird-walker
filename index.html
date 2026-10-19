@@ -96,6 +96,8 @@ body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
 #weird-walker .ww-personality label{display:grid;gap:6px;font-size:13px;flex:1;min-width:170px}
 #weird-walker input,#weird-walker select{width:100%;min-width:0;font:inherit;font-size:16px;color:var(--ww-ink);background:var(--ww-stage);border:1px solid var(--ww-rule);border-radius:9px;padding:11px;min-height:44px}
 #weird-walker .ww-export{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px;font-size:13px}
+#weird-walker .ww-video-option{display:flex;align-items:center;gap:8px;font-size:13px;margin-top:16px;min-height:44px;cursor:pointer}
+#weird-walker .ww-video-option input{width:auto;min-height:0;accent-color:var(--ww-purple)}
 #weird-walker progress{accent-color:var(--ww-purple);flex:1;min-width:100px}
 #weird-walker .ww-walk-result{font-size:13px;margin:0 0 12px;color:var(--ww-muted)}
 #weird-walker .ww-fill-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
@@ -132,7 +134,8 @@ body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
 </div>
 <div class="ww-bottom"><p class="ww-status" id="ww-status" aria-live="polite">Try this little blob, or clear the page and draw your own.</p><div class="ww-actions"><button id="ww-hello" type="button" hidden>Say hello</button><button id="ww-download" type="button">Save image</button><button id="ww-gif" type="button">Save GIF</button><button id="ww-video" type="button">Save video</button><button id="ww-edit" type="button" hidden>Back to drawing</button><button class="ww-primary" id="ww-play" type="button">Bring it to life</button></div></div>
 <div class="ww-export" id="ww-export" hidden><label for="ww-progress" id="ww-progress-label">Recording 0 / 6 seconds</label><progress id="ww-progress" max="6" value="0"></progress><button id="ww-cancel" type="button">Cancel</button></div>
-<p class="ww-note" id="ww-video-note">Video: 6 seconds, silent. MP4 when available, otherwise WebM.</p>
+<label class="ww-video-option"><input id="ww-transparent" type="checkbox" checked>Transparent video background</label>
+<p class="ww-note" id="ww-video-note">Video: 6 seconds, silent. Transparent video downloads as WebM. Turn off transparency for MP4 when available.</p>
 <p class="ww-note">GIF: a looping 6-second walk, 480 × 480 pixels.</p>
 <p class="ww-note">Draw outlines, make circles, then choose if and how to fill them. Legs and faces are always your choice. Your drawing stays in this browser.</p>
 <p class="ww-note">We use Google Analytics to understand site traffic. Your drawings stay in this browser.</p>
@@ -160,7 +163,7 @@ body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
   </details>
   <details>
     <summary>Can I save my animated drawing?</summary>
-    <p>Use Save image to download a PNG, Save GIF for a looping, six-second, 480 × 480 animation, or Save video for a silent, six-second, 720 × 720 clip. Video downloads as MP4 when supported, otherwise WebM. GIF and image downloads also work when video recording is unavailable.</p>
+    <p>Use Save image to download a PNG, Save GIF for a looping, six-second, 480 × 480 animation, or Save video for a silent, six-second, 720 × 720 clip. Videos have a transparent background and download as WebM by default. Turn off Transparent video background to include the stage colour and use MP4 when supported, otherwise WebM. Some video players show transparent areas as black. GIF and image downloads also work when video recording is unavailable.</p>
   </details>
   <details>
     <summary>Where is my creature saved?</summary>
@@ -414,7 +417,15 @@ body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
     const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`weird-walker.${extension}`;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);
   }
   const videoTypes=['video/mp4;codecs=avc1.42001E','video/mp4','video/webm;codecs=vp8','video/webm'];
-  function supportedTypes(){return typeof MediaRecorder==='function'&&typeof canvas.captureStream==='function'?videoTypes.filter(type=>MediaRecorder.isTypeSupported(type)):[];}
+  function supportedTypes(){return typeof MediaRecorder==='function'&&typeof canvas.captureStream==='function'?videoTypes.filter(type=>(!$('transparent').checked||type.startsWith('video/webm'))&&MediaRecorder.isTypeSupported(type)):[];}
+  function syncVideoOption(){
+    const available=supportedTypes().length;
+    $('video').disabled=!available;
+    $('video-note').textContent=available
+      ?($('transparent').checked?'Video: 6 seconds, silent. Transparent WebM; some players show transparent areas as black.':'Video: 6 seconds, silent, with the stage background. MP4 when available, otherwise WebM.')
+      :($('transparent').checked&&typeof MediaRecorder==='function'&&typeof canvas.captureStream==='function'?'Transparent video is unavailable in this browser. Turn off transparency to try a video with a solid background, or save a GIF or image.':'Video recording is unavailable in this browser. GIF and PNG image export still work.');
+  }
+  $('transparent').onchange=syncVideoOption;
   function finishExport(job,message,blob){
     if(recording!==job)return;
     recording=null;clearInterval(job.timer);clearTimeout(job.watchdog);
@@ -465,7 +476,7 @@ body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
     if(!types.length){$('status').textContent='Video recording is unavailable in this browser. You can still save a PNG image.';return;}
     const creature=structuredClone(snapshot());
     const videoCanvas=document.createElement('canvas');videoCanvas.width=720;videoCanvas.height=720;
-    const output=videoCanvas.getContext('2d'),options={walking:true,reduced:reduced.matches,ink:getComputedStyle(root).color,background:getComputedStyle(canvas.parentElement).backgroundColor,title:true};
+    const output=videoCanvas.getContext('2d'),options={walking:true,reduced:reduced.matches,ink:getComputedStyle(root).color,background:$('transparent').checked?null:getComputedStyle(canvas.parentElement).backgroundColor,title:true};
     let recorder,stream;
     for(const type of types){
       try{stream=videoCanvas.captureStream(30);recorder=new MediaRecorder(stream,{mimeType:type,videoBitsPerSecond:3500000});recorder.start();break;}
@@ -498,7 +509,7 @@ body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
   };
   document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelExport('Export cancelled because the tab was hidden. Try again when you return.');if(playing){stop();$('play').textContent='Keep walking';$('hello').disabled=true;}}});
   window.addEventListener('pagehide',()=>cancelExport());
-  if(!supportedTypes().length){$('video').disabled=true;$('video-note').textContent='Video recording is unavailable in this browser. GIF and PNG image export still work.';}
+  syncVideoOption();
   if(restore()){$('status').textContent='Welcome back. Your last creature is right here.';render();}else sample();
   history=[];$('undo').disabled=true;
   $('name').value=creatureName;$('walk').value=walk;
