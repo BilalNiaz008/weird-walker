@@ -6,7 +6,7 @@ Draw a creature, place two leg attachments, then bring it to life.
 
 The landing page follows the paper studio layout at https://weirdwalker.polsia.io/: cream paper, lime and purple accents, a rounded headline beside the drawing studio, a three-step guide, local-saving notice, questions, and a purple closing section. The studio keeps our drawing, naming, fill, face, walking, and export controls. A tilted paper backing gives it a handmade feel without rotating the interactive canvas or affecting pointer coordinates.
 
-Styles live in `assets/site.css`. Nunito is bundled locally in `assets/fonts/` with its SIL Open Font License, so typography works offline without a font service. The small header mascot and interface icons use inline SVG. The earlier lilac logo and mascot remain in `assets/weird-walker-logo.svg` and `assets/weird-walker-icon.svg`, with PNG versions for sharing and the favicon. The warm paper palette stays consistent under light and dark system preferences; reduced motion is respected.
+Styles live in `assets/site.css`. Nunito is bundled locally in `assets/fonts/` with its SIL Open Font License, so typography works offline without a font service. The header and footer use the reference site's SVG logo, lime badge, and two-colour wordmark. Its favicon is bundled in `assets/weird-walker-icon.svg`, with a matching PNG for sharing previews. Interface icons also use inline SVG. The warm paper palette stays consistent under light and dark system preferences; reduced motion is respected.
 
 ## Run
 
