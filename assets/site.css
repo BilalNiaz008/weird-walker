@@ -14,10 +14,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 .ww-wrap{width:min(100% - 72px,1280px);margin-inline:auto}
 .ww-header{border-bottom:1px solid var(--ww-rule)}
 .ww-nav{min-height:80px;display:flex;align-items:center;justify-content:space-between;gap:24px}
-.ww-brand{display:inline-flex;align-items:center;gap:10px;white-space:nowrap;font-size:22px;font-weight:900;letter-spacing:-1.1px}
-.ww-brand-word span{color:var(--ww-purple)}
-.ww-brand-badge{display:grid;place-items:center;width:39px;height:39px;border:1px solid #292820;border-radius:14px 16px 13px 15px;background:var(--ww-lime);color:#292820;transform:rotate(-9deg)}
-.ww-brand-badge .ww-icon{width:29px;height:29px;stroke-width:1.8}
+.ww-brand{display:inline-flex;align-items:center;gap:10px;white-space:nowrap;font-size:21px;font-weight:950;letter-spacing:-.07em}
+.ww-brand-word span{color:#413b91}
+.ww-brand-badge{display:grid;place-items:center;width:37px;height:37px;border:1px solid currentColor;border-radius:12px 12px 10px 14px;background:#c7e466;color:#292820;transform:rotate(-5deg)}
+.ww-brand-badge .ww-icon{width:24px;height:24px;stroke-width:2.5;stroke-linejoin:miter}
 .ww-nav-links{display:flex;align-items:center;gap:32px;font-size:13px;font-weight:800}
 .ww-nav-links>a:not(.ww-pill):hover{color:var(--ww-purple)}
 .ww-pill{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:16px;min-height:50px;padding:14px 23px;border:1px solid #292820;border-radius:99px;background:var(--ww-lime);color:#292820;font-size:13px;font-weight:900;box-shadow:4px 5px 0 #292820;transition:transform .15s,box-shadow .15s}
@@ -134,10 +134,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 .ww-cta p{font-size:15px;margin:0 0 30px}
 .ww-footer{background:#25261e;color:#f8f6eb}
 .ww-footer-inner{min-height:92px;display:flex;align-items:center;justify-content:space-between;gap:24px}
-.ww-footer .ww-brand{font-size:18px}
+.ww-footer .ww-brand{font-size:17px;color:#f8f5eb}
 .ww-footer .ww-brand-word span{color:#c6baff}
-.ww-footer .ww-brand-badge{width:32px;height:32px;border-radius:10px}
-.ww-footer .ww-brand-badge .ww-icon{width:24px;height:24px}
+.ww-footer .ww-brand-badge{width:31px;height:31px;border-radius:10px}
+.ww-footer .ww-brand-badge .ww-icon{width:21px;height:21px}
 .ww-footer p{font-size:11px;color:#d0d0c1;line-height:1.7}
 .ww-footer-copy{display:flex;align-items:center;gap:18px}
 .ww-footer-inner>a:last-child{font-size:12px;font-weight:800}
