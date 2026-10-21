@@ -12,7 +12,9 @@
   gtag('config', 'G-HPRPYP1GHM');
 </script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#6751a8">
+<meta name="theme-color" content="#f8f6eb">
+<link rel="preload" href="assets/fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
 <link rel="icon" href="assets/weird-walker-icon.svg" type="image/svg+xml">
 <title>Weird Walker – Free Online Creature Drawing Game</title>
 <meta name="description" content="Draw your own creature, add two legs, and watch it walk. Play Weird Walker free in your browser, then save a PNG, animated GIF, or short video. No signup.">
@@ -62,114 +64,89 @@
 </script>
 </head>
 <body>
-<main id="weird-walker" aria-label="Little weird walker creature studio">
-<style>
-#weird-walker{--ww-paper:light-dark(#f2f1fc,#252338);--ww-stage:light-dark(#fffefd,#302e43);--ww-ink:light-dark(#34304e,#f0edf9);--ww-muted:light-dark(#69637e,#c1bad7);--ww-rule:light-dark(#dcd8ea,#504b68);--ww-purple:light-dark(#6751a8,#c0a9fa);--ww-on:light-dark(#ffffff,#292138);background:var(--ww-paper);color:var(--ww-ink);border-radius:22px;padding:24px;font-family:'Trebuchet MS',Verdana,sans-serif}
-#weird-walker *{box-sizing:border-box}#weird-walker [hidden]{display:none!important}
-#weird-walker .ww-top,#weird-walker .ww-tools,#weird-walker .ww-bottom,#weird-walker .ww-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-#weird-walker .ww-top{font-size:12px;color:var(--ww-muted)}#weird-walker .ww-mark{font-weight:bold;color:var(--ww-ink)}
-#weird-walker h1{font-size:clamp(28px,5vw,42px);letter-spacing:-1.5px;line-height:1.12;margin:22px 0 9px;color:var(--ww-ink)}
-#weird-walker .ww-sub{font-size:14px;line-height:1.5;color:var(--ww-muted);margin:0 0 23px}
-#weird-walker button{font:inherit;font-size:13px;border:1px solid var(--ww-rule);border-radius:9px;padding:10px 13px;min-height:44px;background:var(--ww-stage);color:var(--ww-ink);cursor:pointer;touch-action:manipulation}
-#weird-walker button:disabled{opacity:.45;cursor:default}#weird-walker button[aria-pressed=true]{background:var(--ww-ink);color:var(--ww-paper);border-color:var(--ww-ink)}
-#weird-walker .ww-tools{margin-bottom:12px}#weird-walker .ww-group{display:flex;gap:6px;flex-wrap:wrap}
-#weird-walker .ww-board{position:relative;border:1px solid var(--ww-rule);border-radius:15px;background:var(--ww-stage);overflow:hidden}
-#weird-walker canvas{width:100%;height:330px;display:block;touch-action:none;cursor:crosshair}
-#weird-walker .ww-caption{position:absolute;left:16px;top:14px;font-size:12px;line-height:1.3;color:var(--ww-muted);pointer-events:none}
-#weird-walker .ww-bottom{margin-top:16px;gap:15px}#weird-walker .ww-status{font-size:13px;line-height:1.5;flex:1;min-width:160px;margin:0;color:var(--ww-muted)}
-#weird-walker .ww-primary{background:var(--ww-purple);color:var(--ww-on);border-color:var(--ww-purple);font-weight:bold;padding:12px 19px}
-#weird-walker .ww-note{font-size:12px;color:var(--ww-muted);margin:17px 0 0}
-@media(max-width:460px){#weird-walker{padding:17px}#weird-walker canvas{height:300px}#weird-walker .ww-bottom{align-items:stretch}#weird-walker .ww-actions{width:100%}#weird-walker .ww-primary{flex:1}#weird-walker .ww-tools button{padding:9px 10px}}
-
-:root{color-scheme:light dark;background:light-dark(#e9e6f3,#1b1929)}
-body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
-#weird-walker{max-width:1000px;margin:0 auto;padding:34px}
-#weird-walker .ww-logo{margin:30px 0 20px}
-#weird-walker .ww-logo img{display:block;width:min(100%,520px);height:auto}
-#weird-walker h1{font-size:clamp(28px,4.5vw,40px);margin:0 0 12px;letter-spacing:-1.2px}
-#weird-walker .ww-sub{font-size:16px;margin-bottom:26px}
-#weird-walker canvas{height:440px}
-#weird-walker button:focus-visible{outline:3px solid var(--ww-purple);outline-offset:3px}
-#weird-walker .ww-board{border-radius:18px}
-#weird-walker .ww-note{line-height:1.6}
-#weird-walker .ww-personality{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 16px;align-items:end}
-#weird-walker .ww-personality label{display:grid;gap:6px;font-size:13px;flex:1;min-width:170px}
-#weird-walker input,#weird-walker select{width:100%;min-width:0;font:inherit;font-size:16px;color:var(--ww-ink);background:var(--ww-stage);border:1px solid var(--ww-rule);border-radius:9px;padding:11px;min-height:44px}
-#weird-walker .ww-export{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px;font-size:13px}
-#weird-walker .ww-video-option{display:flex;align-items:center;gap:8px;font-size:13px;margin-top:16px;min-height:44px;cursor:pointer}
-#weird-walker .ww-video-option input{width:auto;min-height:0;accent-color:var(--ww-purple)}
-#weird-walker progress{accent-color:var(--ww-purple);flex:1;min-width:100px}
-#weird-walker .ww-walk-result{font-size:13px;margin:0 0 12px;color:var(--ww-muted)}
-#weird-walker .ww-fill-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}
-#weird-walker .ww-swatch{width:44px;padding:0;border-radius:50%;background:var(--swatch);border:3px solid var(--ww-stage);outline:1px solid var(--ww-rule)}
-#weird-walker .ww-swatch[aria-pressed=true]{outline:3px solid var(--ww-ink)}
-#weird-walker .ww-guide{border-top:1px solid var(--ww-rule);margin-top:32px;padding-top:8px;font-size:15px;line-height:1.7}
-#weird-walker .ww-guide h2{font-size:clamp(22px,3vw,28px);line-height:1.25;letter-spacing:-.5px;margin:26px 0 12px}
-#weird-walker .ww-guide p,#weird-walker .ww-guide ol{max-width:72ch;margin:0 0 16px}
-#weird-walker .ww-guide ol{padding-left:24px}
-#weird-walker .ww-guide li+li{margin-top:10px}
-#weird-walker .ww-guide details{border-top:1px solid var(--ww-rule);padding:14px 0}
-#weird-walker .ww-guide summary{cursor:pointer;font-weight:bold;min-height:30px}
-#weird-walker .ww-guide summary:focus-visible{outline:3px solid var(--ww-purple);outline-offset:4px;border-radius:3px}
-#weird-walker .ww-guide details p{margin:10px 0 0;color:var(--ww-muted)}
-@media(max-width:600px){body{padding:12px}#weird-walker{padding:18px}#weird-walker canvas{height:360px}#weird-walker .ww-actions{width:100%;justify-content:flex-start}#weird-walker .ww-primary{flex:1}#weird-walker .ww-top{gap:8px}#weird-walker .ww-caption{right:12px}}
-</style>
-<div class="ww-top"><span class="ww-mark">The doodle playground</span><span>Draw something. Let it loose.</span></div>
-<div class="ww-logo"><img src="assets/weird-walker-logo.svg" alt="Weird Walker" width="680" height="144"></div>
-<h1>Draw a creature and watch it walk.</h1>
-<p class="ww-sub">A free online drawing game. Make a doodle, give it two legs, and let it loose. No download or signup.</p>
-<div class="ww-personality"><label>Name<input id="ww-name" maxlength="40" value="Little weirdo" autocomplete="off"></label><label>Walk<select id="ww-walk"><option value="auto">Automatic</option><option value="wobble">Wobble</option><option value="shuffle">Shuffle</option><option value="bounce">Bounce</option></select></label></div>
-<p class="ww-walk-result" id="ww-gait" aria-live="polite"></p>
-<div class="ww-tools" id="ww-tools">
-  <div class="ww-group" role="group" aria-label="Drawing tools"><button id="ww-draw" type="button" aria-pressed="true">Draw</button><button id="ww-circle" type="button" aria-pressed="false">Circle</button><button id="ww-fill" type="button" aria-pressed="false">Fill</button><button id="ww-feet" type="button" aria-pressed="false">Add legs</button><button id="ww-face" type="button" aria-pressed="false">Add face</button></div>
-  <div class="ww-group"><button id="ww-undo" type="button" disabled>Undo</button><button id="ww-clear" type="button">Clear</button><button id="ww-example" type="button">Try a blob</button></div>
-  <div class="ww-group" id="ww-face-tools" hidden><button id="ww-face-centre" type="button">Place in centre</button><button id="ww-face-remove" type="button" disabled>Remove face</button></div>
-  <div class="ww-fill-tools" id="ww-fill-tools" role="group" aria-label="Fill colour" hidden>
-    <button class="ww-swatch" data-fill="#c9b3ef" style="--swatch:#c9b3ef" aria-label="Purple" aria-pressed="true"></button><button class="ww-swatch" data-fill="#f4afc5" style="--swatch:#f4afc5" aria-label="Pink" aria-pressed="false"></button><button class="ww-swatch" data-fill="#f3d777" style="--swatch:#f3d777" aria-label="Yellow" aria-pressed="false"></button><button class="ww-swatch" data-fill="#9fdbc7" style="--swatch:#9fdbc7" aria-label="Mint" aria-pressed="false"></button><button class="ww-swatch" data-fill="#91c5e8" style="--swatch:#91c5e8" aria-label="Blue" aria-pressed="false"></button><button class="ww-swatch" data-fill="#efb37a" style="--swatch:#efb37a" aria-label="Orange" aria-pressed="false"></button><button id="ww-unfill" type="button" aria-pressed="false">Remove fill</button>
+<main id="weird-walker">
+<a class="ww-skip" href="#studio">Skip to drawing studio</a>
+<svg class="ww-icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v15m-6-6 6 6 6-6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="i-creature" viewBox="0 0 32 32"><path d="M7 20c-5-5-1-12 5-12 3-5 13-3 14 3 6 8-2 15-10 12-4 3-9 1-9-3Z"/><path d="m12 24-3 4-4-1m16-4 3 4h4m-15-9q4 3 7-1"/><path d="M13 13v1m8-2v1" stroke-width="2.5"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="m4 16 12-12a2 2 0 0 1 4 4L8 20l-5 1 1-5Zm9-9 4 4M3 21l2-2"/></symbol>
+  <symbol id="i-circle" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="8" ry="9"/></symbol>
+  <symbol id="i-fill" viewBox="0 0 24 24"><path d="m5 8 7-6 8 8-9 9-9-8 3-3Zm0 0 7 7 8-5M8 3l6 6m6 6c0 0-3 3-3 5a3 3 0 0 0 6 0c0-2-3-5-3-5Z"/></symbol>
+  <symbol id="i-legs" viewBox="0 0 24 24"><path d="M7 3c-4 0-4 8-2 10l1 7h3l1-8c2-5 1-9-3-9Zm11 2c-4 0-4 7-2 10l1 6h3l1-8c1-4 0-8-3-8Z"/></symbol>
+  <symbol id="i-face" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 8v1m8-1v1m-8 5q4 5 8 0"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="m8 4-5 5 5 5M3 9h10a6 6 0 0 1 0 12"/></symbol>
+  <symbol id="i-eraser" viewBox="0 0 24 24"><path d="m3 14 10-11 9 8-10 11H9l-6-5v-3Zm4-4 9 8m-5 4h11"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></symbol>
+  <symbol id="i-magic" viewBox="0 0 24 24"><path d="m3 20 12-12 4 4L7 24l-4-4Zm9-9 4 4M4 2v5M1.5 4.5h5M19 1v5m-2.5-2.5h5M20 18v5m-2.5-2.5h5"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V6a4 4 0 0 1 8 0v4m-4 5v2"/></symbol>
+  <symbol id="i-cursor" viewBox="0 0 24 24"><path d="m4 3 16 8-8 2-3 8-5-18Z"/></symbol>
+</svg>
+<header class="ww-header" id="top">
+  <div class="ww-nav ww-wrap">
+    <a class="ww-brand" href="#top" aria-label="Weird Walker home"><span class="ww-brand-badge"><svg class="ww-icon" aria-hidden="true"><use href="#i-creature"/></svg></span><span class="ww-brand-word">weird<span>walker</span></span></a>
+    <nav class="ww-nav-links" aria-label="Main navigation"><a href="#how-it-works">How it works</a><a href="#your-sketch">Your sketch, your browser</a><a href="#questions">Questions</a><a class="ww-pill ww-pill-purple" href="#studio">Start drawing <svg class="ww-icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></nav>
   </div>
-</div>
-<div class="ww-board">
-  <span class="ww-caption" id="ww-caption">Meet your first questionable creation.</span>
-  <canvas id="ww-canvas" aria-label="Creature drawing area. Draw with a mouse or finger. Alternatively, use Try a blob and Bring it to life with the keyboard.">Use Try a blob to create a creature, then Bring it to life to animate it.</canvas>
-</div>
-<div class="ww-bottom"><p class="ww-status" id="ww-status" aria-live="polite">Try this little blob, or clear the page and draw your own.</p><div class="ww-actions"><button id="ww-hello" type="button" hidden>Say hello</button><button id="ww-download" type="button">Save image</button><button id="ww-gif" type="button">Save GIF</button><button id="ww-video" type="button">Save video</button><button id="ww-edit" type="button" hidden>Back to drawing</button><button class="ww-primary" id="ww-play" type="button">Bring it to life</button></div></div>
-<div class="ww-export" id="ww-export" hidden><label for="ww-progress" id="ww-progress-label">Recording 0 / 6 seconds</label><progress id="ww-progress" max="6" value="0"></progress><button id="ww-cancel" type="button">Cancel</button></div>
-<label class="ww-video-option"><input id="ww-transparent" type="checkbox" checked>Transparent video background</label>
-<p class="ww-note" id="ww-video-note">Video: 6 seconds, silent. Transparent video downloads as WebM. Turn off transparency for MP4 when available.</p>
-<p class="ww-note">GIF: a looping 6-second walk, 480 × 480 pixels.</p>
-<p class="ww-note">Draw outlines, make circles, then choose if and how to fill them. Legs and faces are always your choice. Your drawing stays in this browser.</p>
-<p class="ww-note">We use Google Analytics to understand site traffic. Your drawings stay in this browser.</p>
-<section class="ww-guide" aria-labelledby="ww-about-heading">
-  <h2 id="ww-about-heading">Make your own walking creature</h2>
-  <p>Weird Walker is a free creature drawing game that brings your doodles to life. Sketch a wobbly monster, a round little blob, or a creature nobody has seen before. Add two legs and watch your drawing shuffle, bounce, or wobble across the stage. You choose the outline, colours, and whether it has a face.</p>
-  <h2>How to make your drawing walk</h2>
-  <ol>
-    <li><strong>Draw a body.</strong> Use Draw for a freehand outline, drag with Circle to make an oval, or choose Try a blob. To add colour, select Fill and tap inside a closed shape.</li>
-    <li><strong>Add two legs.</strong> Choose Add legs and tap two attachment spots on the body. You can also choose Add face to place eyes and a mouth.</li>
-    <li><strong>Bring it to life.</strong> Name your creature and press Bring it to life. Try a different walk, use Say hello for a reaction, or pause and go Back to drawing to make changes.</li>
-  </ol>
-  <h2>Questions about the drawing game</h2>
-  <details>
-    <summary>Is Weird Walker free to play?</summary>
-    <p>Yes. You can draw, animate, and save your creature for free. There is no account to create and no app to install.</p>
-  </details>
-  <details>
-    <summary>Can I draw on a phone or tablet?</summary>
-    <p>Yes. Draw and place legs with your finger on a touchscreen, or use a mouse or pen. Weird Walker runs in modern desktop and mobile browsers.</p>
-  </details>
-  <details>
-    <summary>How does my creature choose its walk?</summary>
-    <p>Automatic walking uses your drawing's proportions: tall bodies Wobble, wide bodies Shuffle, and other bodies Bounce. You can choose any of the three walks from the Walk menu.</p>
-  </details>
-  <details>
-    <summary>Can I save my animated drawing?</summary>
-    <p>Use Save image to download a PNG, Save GIF for a looping, six-second, 480 × 480 animation, or Save video for a silent, six-second, 720 × 720 clip. Videos have a transparent background and download as WebM by default. Turn off Transparent video background to include the stage colour and use MP4 when supported, otherwise WebM. Some video players show transparent areas as black. GIF and image downloads also work when video recording is unavailable.</p>
-  </details>
-  <details>
-    <summary>Where is my creature saved?</summary>
-    <p>Your latest creature is saved in this browser on this device. The app does not upload your drawing. Clearing browser data removes the saved creature, so download an image, GIF, or video if you want to keep a copy.</p>
-  </details>
+</header>
+<section class="ww-hero ww-wrap" aria-labelledby="ww-hero-title">
+  <div class="ww-hero-copy">
+    <p class="ww-eyebrow"><span class="ww-dot" aria-hidden="true"></span>Little creatures. Big imaginations.</p>
+    <h1 id="ww-hero-title">A quick sketch.<br><span class="ww-wiggle">A whole wiggle.</span></h1>
+    <p class="ww-sub">A free online drawing game. Make a doodle, give it two legs, and watch your creature find its walk. All in your browser.</p>
+    <div class="ww-hero-links"><a class="ww-pill" href="#studio">Make a little walker <svg class="ww-icon" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="ww-text-link" href="#how-it-works"><svg class="ww-icon" aria-hidden="true"><use href="#i-down"/></svg>See how it works</a></div>
+    <p class="ww-free"><svg class="ww-icon" aria-hidden="true"><use href="#i-check"/></svg>Free to play · no download · no signup</p>
+  </div>
+  <section class="ww-studio" id="studio" aria-label="Little creature drawing studio">
+    <div class="ww-sticker" aria-hidden="true">MAKE<br>A PAL</div>
+    <div class="ww-studio-card">
+      <div class="ww-studio-top"><div class="ww-studio-title"><span class="ww-dot" aria-hidden="true"></span><div><strong>little creature studio</strong><small>make a walker, make it yours</small></div></div><button class="ww-primary" id="ww-play" type="button">Bring it to life</button></div>
+      <div class="ww-board">
+        <canvas id="ww-canvas" aria-label="Creature drawing area. Draw with a mouse or finger. Alternatively, use Try a blob and Bring it to life with the keyboard.">Use Try a blob to create a creature, then Bring it to life to animate it.</canvas>
+        <span class="ww-canvas-label">YOUR CANVAS</span><span class="ww-saved"><span aria-hidden="true">♥</span> saved in this browser</span>
+      </div>
+      <div class="ww-tools" id="ww-tools">
+        <div class="ww-group" role="group" aria-label="Drawing tools"><button id="ww-draw" type="button" aria-pressed="true"><svg class="ww-icon" aria-hidden="true"><use href="#i-pen"/></svg>Draw</button><button id="ww-circle" type="button" aria-pressed="false"><svg class="ww-icon" aria-hidden="true"><use href="#i-circle"/></svg>Circle</button><button id="ww-fill" type="button" aria-pressed="false"><svg class="ww-icon" aria-hidden="true"><use href="#i-fill"/></svg>Fill</button><button id="ww-feet" type="button" aria-pressed="false"><svg class="ww-icon" aria-hidden="true"><use href="#i-legs"/></svg>Add legs</button><button id="ww-face" type="button" aria-pressed="false"><svg class="ww-icon" aria-hidden="true"><use href="#i-face"/></svg>Add face</button></div>
+        <div class="ww-group"><button class="ww-tool-icon" id="ww-undo" type="button" aria-label="Undo" title="Undo" disabled><svg class="ww-icon" aria-hidden="true"><use href="#i-undo"/></svg></button><button class="ww-tool-icon" id="ww-clear" type="button" aria-label="Clear" title="Clear canvas"><svg class="ww-icon" aria-hidden="true"><use href="#i-eraser"/></svg></button><button id="ww-example" type="button">Try a blob</button></div>
+        <div class="ww-group" id="ww-face-tools" hidden><button id="ww-face-centre" type="button">Place in centre</button><button id="ww-face-remove" type="button" disabled>Remove face</button></div>
+        <div class="ww-fill-tools" id="ww-fill-tools" role="group" aria-label="Fill colour" hidden>
+          <button class="ww-swatch" data-fill="#c9b3ef" style="--swatch:#c9b3ef" aria-label="Purple" aria-pressed="true"></button><button class="ww-swatch" data-fill="#f4afc5" style="--swatch:#f4afc5" aria-label="Pink" aria-pressed="false"></button><button class="ww-swatch" data-fill="#f3d777" style="--swatch:#f3d777" aria-label="Yellow" aria-pressed="false"></button><button class="ww-swatch" data-fill="#9fdbc7" style="--swatch:#9fdbc7" aria-label="Mint" aria-pressed="false"></button><button class="ww-swatch" data-fill="#91c5e8" style="--swatch:#91c5e8" aria-label="Blue" aria-pressed="false"></button><button class="ww-swatch" data-fill="#efb37a" style="--swatch:#efb37a" aria-label="Orange" aria-pressed="false"></button><button id="ww-unfill" type="button" aria-pressed="false">Remove fill</button>
+        </div>
+      </div>
+      <span class="ww-caption" id="ww-caption">Meet your first questionable creation.</span>
+      <div class="ww-personality"><label for="ww-name">NAME<input id="ww-name" maxlength="40" value="Little weirdo" autocomplete="off"></label><label for="ww-walk">THE WALK<select id="ww-walk"><option value="auto">Automatic</option><option value="wobble">Wobble</option><option value="shuffle">Shuffle</option><option value="bounce">Bounce</option></select></label></div>
+      <p class="ww-walk-result" id="ww-gait" aria-live="polite"></p>
+      <div class="ww-bottom"><span class="ww-export-label">TAKE IT WITH YOU</span><div class="ww-actions"><button id="ww-hello" type="button" hidden>Say hello</button><button id="ww-edit" type="button" hidden>Back to drawing</button><button id="ww-download" type="button" aria-label="Save image"><svg class="ww-icon" aria-hidden="true"><use href="#i-download"/></svg>PNG</button><button id="ww-gif" type="button" aria-label="Save GIF"><svg class="ww-icon" aria-hidden="true"><use href="#i-magic"/></svg>GIF</button><button id="ww-video" type="button" aria-label="Save video"><svg class="ww-icon" aria-hidden="true"><use href="#i-magic"/></svg>Video</button></div></div>
+      <div class="ww-export" id="ww-export" hidden><label for="ww-progress" id="ww-progress-label">Recording 0 / 6 seconds</label><progress id="ww-progress" max="6" value="0"></progress><button id="ww-cancel" type="button">Cancel</button></div>
+      <p class="ww-status" id="ww-status" aria-live="polite">Try this little blob, or clear the page and draw your own.</p>
+      <label class="ww-video-option"><input id="ww-transparent" type="checkbox" checked>Transparent video background</label>
+      <details class="ww-export-info"><summary>About your downloads</summary><p class="ww-note" id="ww-video-note">Video: 6 seconds, silent. Transparent video downloads as WebM. Turn off transparency for MP4 when available.</p><p class="ww-note">GIF: a looping 6-second walk, 480 × 480 pixels. PNG saves the current canvas.</p></details>
+    </div>
+    <div class="ww-studio-foot"><span>A little oddball. Entirely yours.</span><span>Draw something. Let it loose.</span></div>
+  </section>
 </section>
+<div class="ww-ribbon"><div class="ww-ribbon-inner ww-wrap"><span><svg class="ww-icon" aria-hidden="true"><use href="#i-cursor"/></svg>Mouse, pen, or fingertip</span><b aria-hidden="true">✳</b><span><svg class="ww-icon" aria-hidden="true"><use href="#i-magic"/></svg>Play right in your browser</span><b aria-hidden="true">✳</b><span><svg class="ww-icon" aria-hidden="true"><use href="#i-download"/></svg>PNG, GIF &amp; silent video</span></div></div>
+<section class="ww-guide ww-wrap" id="how-it-works" aria-labelledby="ww-about-heading">
+  <div class="ww-section-intro"><p class="ww-eyebrow">A doodle, a few clicks, a new friend</p><h2 id="ww-about-heading">No art skills.<br>Just a little imagination.</h2><p>Make your own walking creature. You choose the outline, the colours, and the personality. A wobbly line is a perfectly good place to start.</p></div>
+  <ol class="ww-steps">
+    <li><span class="ww-step-number">01</span><span class="ww-step-icon"><svg class="ww-icon" aria-hidden="true"><use href="#i-pen"/></svg></span><h3>Draw your kind of weird</h3><p>Sketch an outline, drag a circle, or try a blob. Choose Fill to add colour to any closed shape.</p><svg class="ww-icon" aria-hidden="true"><use href="#i-arrow"/></svg></li>
+    <li><span class="ww-step-number">02</span><span class="ww-step-icon"><svg class="ww-icon" aria-hidden="true"><use href="#i-legs"/></svg></span><h3>A pair of legs. A little life.</h3><p>Add two legs and a face if you like. Bring it to life, then try a bounce, shuffle, or wobble.</p><svg class="ww-icon" aria-hidden="true"><use href="#i-arrow"/></svg></li>
+    <li><span class="ww-step-number">03</span><span class="ww-step-icon"><svg class="ww-icon" aria-hidden="true"><use href="#i-magic"/></svg></span><h3>Keep your tiny creation</h3><p>Download a picture, a looping GIF, or a short video. Your creature is ready for its next adventure.</p><svg class="ww-icon" aria-hidden="true"><use href="#i-arrow"/></svg></li>
+  </ol>
+  <div class="ww-privacy" id="your-sketch"><span class="ww-step-icon"><svg class="ww-icon" aria-hidden="true"><use href="#i-lock"/></svg></span><div><h2>A little creature. Your little secret.</h2><p>Your drawing is saved in this browser on this device. We don’t upload it. Download a copy to keep it when you change browsers or clear your browser data.</p></div><span class="ww-local-badge"><svg class="ww-icon" aria-hidden="true"><use href="#i-check"/></svg>Saved on this device</span></div>
+</section>
+<section class="ww-faq" id="questions" aria-labelledby="ww-faq-heading"><div class="ww-faq-grid ww-wrap">
+  <div class="ww-faq-intro"><p class="ww-eyebrow">Before the first doodle</p><h2 id="ww-faq-heading">A few tiny<br>answers.</h2><p>A little help for your first creature and its very first steps.</p></div>
+  <div class="ww-questions">
+    <details><summary>Is Weird Walker free to play?</summary><p>Yes. You can draw, animate, and save your creature for free. There is no account to create and no app to install.</p></details>
+    <details><summary>Can I draw on a phone or tablet?</summary><p>Yes. Draw and place legs with your finger on a touchscreen, or use a mouse or pen. Weird Walker runs in modern desktop and mobile browsers.</p></details>
+    <details><summary>How does my creature choose its walk?</summary><p>Automatic walking uses your drawing's proportions: tall bodies Wobble, wide bodies Shuffle, and other bodies Bounce. You can choose any of the three walks from the Walk menu.</p></details>
+    <details><summary>Can I save my animated drawing?</summary><p>Use PNG to save a picture, GIF for a looping, six-second animation, or Video for a silent, six-second clip. Videos have a transparent background and download as WebM by default. Turn off Transparent video background to include the stage colour and use MP4 when supported, otherwise WebM. Some video players show transparent areas as black. GIF and image downloads also work when video recording is unavailable.</p></details>
+    <details><summary>Where is my creature saved?</summary><p>Your latest creature is saved in this browser on this device. The app does not upload your drawing. Clearing browser data removes the saved creature, so download an image, GIF, or video if you want to keep a copy.</p></details>
+  </div>
+</div></section>
+<section class="ww-cta" aria-labelledby="ww-cta-heading"><span class="ww-step-icon"><svg class="ww-icon" aria-hidden="true"><use href="#i-magic"/></svg></span><h2 id="ww-cta-heading">Your next little oddball<br>starts with a line.</h2><p>Give your imagination a pair of legs.</p><a class="ww-pill" href="#studio">Start doodling <svg class="ww-icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></section>
+<footer class="ww-footer"><div class="ww-footer-inner ww-wrap"><div class="ww-footer-copy"><a class="ww-brand" href="#top" aria-label="Weird Walker home"><span class="ww-brand-badge"><svg class="ww-icon" aria-hidden="true"><use href="#i-creature"/></svg></span><span class="ww-brand-word">weird<span>walker</span></span></a><p>Made for little doodles and big imaginations.<br>Google Analytics measures site traffic. Your drawings stay here.</p></div><p>© 2026 Weird Walker</p><a href="#studio">Make a walker</a></div></footer>
 <script src="assets/vendor/gifenc.js"></script>
 <script>
 (() => {
@@ -288,11 +265,13 @@ body{margin:0;padding:36px 20px;font-family:'Trebuchet MS',Verdana,sans-serif}
         extents.t=Math.min(extents.t,creature.face.y-18);extents.b=Math.max(extents.b,creature.face.y+21);
       }
       const radius=Math.max(Math.hypot(extents.l-cx,extents.t-cy),Math.hypot(extents.r-cx,extents.b-cy),Math.hypot(extents.l-cx,extents.b-cy),Math.hypot(extents.r-cx,extents.t-cy));
-      scale=Math.min(w*.34/Math.max(radius,1),(h-150)/Math.max(2*radius,1),options.title?2.1:1.15);
-      const bob=options.reduced?0:Math.abs(Math.sin(phase))*gait.bob;
-      const tilt=options.reduced?.012:gait.tilt;
-      const bottomReach=extents.b-cy+Math.max(Math.abs(extents.l-cx),Math.abs(extents.r-cx))*Math.sin(tilt)+Math.max(Math.abs(extents.t-cy),Math.abs(extents.b-cy))*(1-Math.cos(tilt));
-      context.translate(w/2+(options.reduced?0:Math.sin(t*.65)*w*.08),ground-bottomReach*scale-bob-hop);
+      const tilt=options.reduced?.012:gait.tilt,reachX=Math.max(cx-extents.l,extents.r-cx),reachY=Math.max(cy-extents.t,extents.b-cy);
+      const turnPadding=reachY*(1-Math.cos(tilt)),sideReach=reachX+reachY*Math.sin(tilt);
+      const bottomReach=extents.b-cy+reachX*Math.sin(tilt)+turnPadding,topReach=cy-extents.t+reachX*Math.sin(tilt)+turnPadding;
+      // Keep the drawn size unless the full walking motion would leave the stage.
+      scale=options.title?Math.min(w*.34/Math.max(radius,1),(h-150)/Math.max(2*radius,1),2.1):Math.min((w-36)/640,(h-70)/360,(w/2-18)/Math.max(sideReach,1),(ground-48-(options.reduced?0:gait.bob+24))/Math.max(topReach+bottomReach,1));
+      const bob=options.reduced?0:Math.abs(Math.sin(phase))*gait.bob,travel=options.reduced?0:Math.min(w*.08,Math.max(0,w/2-18-sideReach*scale));
+      context.translate(w/2+Math.sin(t*.65)*travel,ground-bottomReach*scale-bob-hop);
       context.scale(scale,scale);context.rotate(Math.sin(phase)*(options.reduced?.012:gait.tilt));context.translate(-cx,-cy);
     }else{scale=Math.min((w-36)/640,(h-70)/360);context.translate(w/2-320*scale,h/2-170*scale);context.scale(scale,scale);}
     const transform=context.getTransform();
