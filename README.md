@@ -2,9 +2,11 @@
 
 Draw a creature, place two leg attachments, then bring it to life.
 
-## Logo
+## Design
 
-The lilac walking doodle and custom lowercase wordmark are in `assets/weird-walker-logo.svg`; the standalone mascot and favicon are in `assets/weird-walker-icon.svg`. Both are scalable vector artwork with no font dependencies. The wordmark and mascot legs adapt to dark mode. Transparent PNG exports are available alongside the SVGs.
+The landing page follows the paper studio layout at https://weirdwalker.polsia.io/: cream paper, lime and purple accents, a rounded headline beside the drawing studio, a three-step guide, local-saving notice, questions, and a purple closing section. The studio keeps our drawing, naming, fill, face, walking, and export controls. A tilted paper backing gives it a handmade feel without rotating the interactive canvas or affecting pointer coordinates.
+
+Styles live in `assets/site.css`. Nunito is bundled locally in `assets/fonts/` with its SIL Open Font License, so typography works offline without a font service. The small header mascot and interface icons use inline SVG. The earlier lilac logo and mascot remain in `assets/weird-walker-logo.svg` and `assets/weird-walker-icon.svg`, with PNG versions for sharing and the favicon. The warm paper palette stays consistent under light and dark system preferences; reduced motion is respected.
 
 ## Run
 
@@ -23,6 +25,7 @@ For a local web address, run `python -m http.server 8790 --bind 127.0.0.1` from 
 - In Add face mode, Place in centre provides a keyboard alternative and Remove face makes the creature faceless. Placement is optional: creatures can walk, react, and export without a face.
 - Face positions stay attached to the drawing during animation and export, and stay fixed when you add strokes. Clear and Try a blob remove the face; Undo restores it. Face placement is unavailable while walking or recording.
 - Bring it to life, Pause, or go Back to drawing.
+- Walking keeps the creature's drawn size whenever it fits. Sideways travel is reduced near the stage edges; oversized creatures scale down only enough to keep the body, legs, face, and reactions in view.
 - Undo restores up to 30 edits, including Clear and changes to leg and face placement.
 - Save image downloads a PNG of the current stage.
 - Save GIF downloads a looping six-second, 480 × 480 animation at 20 fps, including your creature's name, colours, face, and selected walk. Frames use fixed animation times, so a slower device takes longer to export without slowing down the saved walk. GIF encoding happens locally using the bundled MIT-licensed [gifenc 1.0.3](https://github.com/mattdesl/gifenc) in `assets/vendor/`; no build or external service is needed.
@@ -39,7 +42,7 @@ Keyboard users can name a blob, choose a walk, place a centred face, remove it, 
 
 ## Check
 
-The app uses a plain HTML file, local SVG logo assets, and a bundled GIF encoder. `check.cjs` uses Node.js and Playwright for desktop, phone, touch, persistence, undo, PNG export, shape thresholds, explicit legs, circles and ovals, per-shape fills, old saved drawings, different gaits, blinking, body-only reactions, reduced motion, and animation export checks. It also checks the headline and guide without JavaScript, canonical and sharing metadata, structured data, local sharing images, robots.txt, and sitemap XML. It decodes real MP4, WebM, and GIF files and checks duration and changing frames, transparent WebM alpha and opaque MP4/WebM backgrounds, plus GIF looping and frame count, cancellation, tab hiding, resize, unsupported recording, and encoder failures. With Playwright available, run `node check.cjs`. Set `NODE_PATH` to an existing Playwright installation if it is outside this folder. Tests produce images, GIFs, and videos in the system temporary directory. Full tests require a Chromium build with MP4 recording and GIF ImageDecoder support.
+The app uses a plain HTML file, a local stylesheet and font, SVG assets, and a bundled GIF encoder. `check.cjs` uses Node.js and Playwright for desktop, phone, touch, persistence, undo, PNG export, shape thresholds, explicit legs, circles and ovals, per-shape fills, old saved drawings, different gaits, blinking, body-only reactions, reduced motion, and animation export checks. It also checks the headline and guide without JavaScript, canonical and sharing metadata, structured data, local sharing images, robots.txt, and sitemap XML. It decodes real MP4, WebM, and GIF files and checks duration and changing frames, transparent WebM alpha and opaque MP4/WebM backgrounds, plus GIF looping and frame count, cancellation, tab hiding, resize, unsupported recording, and encoder failures. With Playwright available, run `node check.cjs`. Set `NODE_PATH` to an existing Playwright installation if it is outside this folder. Tests produce images, GIFs, and videos in the system temporary directory. Full tests require a Chromium build with MP4 recording and GIF ImageDecoder support.
 
 ## Search and deployment
 

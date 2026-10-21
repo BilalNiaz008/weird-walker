@@ -19,12 +19,25 @@ async function placeExampleLegs(page,touch=false){await page.locator('#ww-feet')
   try {
     await seo(browser);
     await animationTiming(browser);
+    await walkingSize(browser);
     for(const width of [1280,360,320]) {
       const context=await browser.newContext({offline:true,viewport:{width,height:1000},colorScheme:width===360?'dark':'light',hasTouch:width<400,reducedMotion:width===360?'reduce':'no-preference',acceptDownloads:true});
       const page=await context.newPage(),errors=[];
       page.on('pageerror',e=>errors.push(e.message));
       await page.goto(pathToFileURL(path.join(__dirname,'index.html')).href);
       const canvas=page.locator('#ww-canvas'),play=page.locator('#ww-play');
+      await page.evaluate(()=>document.fonts.ready);
+      assert.equal(await page.locator('html').evaluate(el=>getComputedStyle(el).colorScheme),'light');
+      const hero=await page.locator('.ww-hero-copy').boundingBox(),studio=await page.locator('#studio').boundingBox();
+      assert.ok(width===1280?studio.x>hero.x+hero.width:studio.y>hero.y+hero.height,'Studio sits beside the headline on desktop and below it on phones');
+      for(const link of await page.locator('nav a').all())assert.equal(await page.locator(await link.getAttribute('href')).count(),1);
+      if(width===1280){
+        for(const tabletWidth of [760,820,1024,1440]){
+          await page.setViewportSize({width:tabletWidth,height:1000});
+          assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`No overflow at ${tabletWidth}px`);
+        }
+        await page.setViewportSize({width,height:1000});
+      }
       await page.waitForTimeout(100);
       await page.screenshot({path:path.join(output,`studio-${width}.png`),fullPage:true});
       await placeExampleLegs(page,width<400);
@@ -92,12 +105,14 @@ async function seo(browser){
   const canonical=await page.locator('link[rel="canonical"]').getAttribute('href');
   assert.equal(canonical,'https://www.weirdwalker.online/');
   assert.equal(await page.locator('h1').count(),1);
-  assert.match(await page.locator('h1').innerText(),/draw.*creature.*walk/i);
+  assert.match(await page.locator('h1').innerText(),/quick sketch.*whole wiggle/is);
   assert.ok(await page.locator('h1').isVisible());
   assert.ok(await page.locator('.ww-guide').isVisible());
   assert.equal(await page.locator('.ww-guide ol li').count(),3);
-  await page.locator('.ww-guide summary').first().press('Enter');
-  assert.ok(await page.locator('.ww-guide details').first().getAttribute('open')!==null);
+  await page.locator('.ww-questions summary').first().press('Enter');
+  assert.ok(await page.locator('.ww-questions details').first().getAttribute('open')!==null);
+  assert.equal(await page.locator('link[rel="stylesheet"]').getAttribute('href'),'assets/site.css');
+  assert.ok(fs.statSync(path.join(__dirname,'assets/fonts/nunito-latin.woff2')).size>1000);
   assert.equal(await page.locator('meta[property="og:url"]').getAttribute('content'),canonical);
   for(const selector of ['meta[property="og:title"]','meta[name="twitter:title"]'])assert.equal(await page.locator(selector).getAttribute('content'),await page.title());
   assert.match(await page.locator('meta[name="description"]').getAttribute('content'),/creature.*walk/i);
@@ -161,6 +176,42 @@ async function animationTiming(browser){
   }
   await page.close();
   console.log('PASS: equal walking speed at 120/60/30/15/10 fps, pause/resume, and hidden-tab timing.');
+}
+
+async function walkingSize(browser){
+  const page=await browser.newPage({offline:true});
+  await page.setContent(fs.readFileSync(path.join(__dirname,'index.html'),'utf8').replace('  history=[];','  window.walkerCheck={renderScene,snapshot};\n  history=[];'));
+  const result=await page.evaluate(()=>{
+    const c=document.createElement('canvas'),ctx=c.getContext('2d'),sample=walkerCheck.snapshot();
+    const rectangle=(l,t,r,b)=>({...sample,strokes:[[{x:l,y:t},{x:r,y:t},{x:r,y:b},{x:l,y:b},{x:l,y:t}]],feet:[{x:l+20,y:b},{x:r-20,y:b}],face:null});
+    const shapes=[{...sample,feet:[{x:290,y:190},{x:350,y:190}]},rectangle(80,90,560,190),rectangle(300,130,340,170)];
+    const scale=hit=>{const m=hit.inverse.inverse();return Math.hypot(m.a,m.b);};
+    let sameSize=true,stable=true,fits=true;
+    for(const [w,h] of [[920,440],[288,360],[1000,440]]){
+      c.width=w;c.height=h;
+      for(const shape of shapes){
+        const drawn=scale(walkerCheck.renderScene(ctx,w,h,0,shape,{ink:'#34304e'}));
+        for(const walk of ['wobble','shuffle','bounce'])for(const reduced of [false,true])for(const t of [0,.4,1.3,3,4.7,6]){
+          const hit=walkerCheck.renderScene(ctx,w,h,t,{...shape,walk},{ink:'#34304e',walking:true,reduced,reactionAt:t-.4});
+          sameSize=sameSize&&Math.abs(scale(hit)-drawn)<1e-9;
+        }
+      }
+      for(const shape of [rectangle(0,20,640,270),rectangle(240,20,400,270)])for(const face of [null,{x:shape.strokes[0][0].x,y:20}])for(const walk of ['wobble','shuffle','bounce'])for(const reduced of [false,true]){
+        let firstScale;
+        const creature={...shape,face,walk},bottom=270;
+        const points=[...shape.strokes[0],...shape.feet.flatMap(f=>[f,{x:f.x-20,y:bottom+52},{x:f.x+34,y:bottom+52}])];
+        if(face)for(const dx of [-24,24])for(const dy of [-18,21])points.push({x:face.x+dx,y:face.y+dy});
+        for(let t=0;t<=6;t+=.25){
+          const hit=walkerCheck.renderScene(ctx,w,h,t,creature,{ink:'#34304e',walking:true,reduced,reactionAt:t-.4}),size=scale(hit),m=hit.inverse.inverse();
+          firstScale??=size;stable=stable&&Math.abs(size-firstScale)<1e-9;
+          fits=fits&&points.every(point=>{const p=new DOMPoint(point.x,point.y).matrixTransform(m);return p.x>=0&&p.x<=w&&p.y>=0&&p.y<=h;});
+        }
+      }
+    }
+    return {sameSize,stable,fits};
+  });
+  assert.deepEqual(result,{sameSize:true,stable:true,fits:true});await page.close();
+  console.log('PASS: drawn size preserved when walking, stable scale during steps/reactions, and large bodies/legs/faces fit across gaits, reduced motion, and desktop/mobile sizes.');
 }
 
 async function personalityAndVideo(browser,output){
