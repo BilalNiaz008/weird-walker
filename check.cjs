@@ -29,7 +29,9 @@ async function placeExampleLegs(page,touch=false){await page.locator('#ww-feet')
       await page.evaluate(()=>document.fonts.ready);
       assert.equal(await page.locator('html').evaluate(el=>getComputedStyle(el).colorScheme),'light');
       const hero=await page.locator('.ww-hero-copy').boundingBox(),studio=await page.locator('#studio').boundingBox();
-      assert.ok(width===1280?studio.x>hero.x+hero.width:studio.y>hero.y+hero.height,'Studio sits beside the headline on desktop and below it on phones');
+      assert.ok(studio.y>hero.y+hero.height,'Studio sits below the introduction');
+      assert.ok(Math.abs(studio.x+studio.width/2-width/2)<1,'Studio is centered');
+      if(width===1280){assert.ok(studio.width>=1100,'Desktop studio has room to draw');assert.ok((await canvas.boundingBox()).height>=450,'Desktop canvas is taller');}
       for(const link of await page.locator('nav a').all())assert.equal(await page.locator(await link.getAttribute('href')).count(),1);
       if(width===1280){
         for(const tabletWidth of [760,820,1024,1440]){
