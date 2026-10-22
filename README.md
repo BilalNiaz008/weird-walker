@@ -8,6 +8,8 @@ The landing page follows the paper studio layout at https://weirdwalker.polsia.i
 
 Styles live in `assets/site.css`. Nunito is bundled locally in `assets/fonts/` with its SIL Open Font License, so typography works offline without a font service. The header and footer use the reference site's SVG logo, lime badge, and two-colour wordmark. Its favicon is bundled in `assets/weird-walker-icon.svg`, with a matching PNG for sharing previews. Interface icons also use inline SVG. The warm paper palette stays consistent under light and dark system preferences; reduced motion is respected.
 
+Browser tabs use the SVG favicon with a PNG fallback. Both favicon links carry `?v=2` to refresh the previously cached lilac icon; bump this version when replacing the favicon again.
+
 ## Run
 
 Open `index.html` in a modern browser. No build, account, server, or package installation is needed. Drawing and animation work even when Google Analytics is blocked or offline.
